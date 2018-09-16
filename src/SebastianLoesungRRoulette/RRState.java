@@ -1,4 +1,4 @@
-package SebastianLösungRRoulette;
+package SebastianLoesungRRoulette;
 import java.util.*;
 
 /* Diese Klasse repraesentiert einen Zustand des n-RR Spiels

@@ -1,4 +1,4 @@
-package SebastianLösungRRoulette;
+package SebastianLoesungRRoulette;
 import java.util.*;
 
 
