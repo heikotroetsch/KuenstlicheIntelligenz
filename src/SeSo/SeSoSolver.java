@@ -19,8 +19,10 @@ public class SeSoSolver {
 		todo.add(new SeSoState());
 		int depth = 0;
 		while(!todo.isEmpty()) {
+			System.out.println("f1");
 			System.out.println(depth++);
 			for(int i = 0; i< todo.size(); i++) {
+				System.out.println(todo.size());
 				SeSoState s = todo.get(i);
 				if(s.isSolution()) {
 					return s.toString();
@@ -35,9 +37,12 @@ public class SeSoSolver {
 	
 	private static List<SeSoState>addWithoutDuplicates(HashSet<SeSoState> visitedNodes, List<SeSoState> nodes) {
 		List<SeSoState> noDuplicates = new ArrayList<SeSoState>();
-		for(SeSoState s : visitedNodes) {
+		for(SeSoState s : nodes) {
 			if(!visitedNodes.contains(s)) {
 				noDuplicates.add(s);
+				System.out.println("no Duplicate");
+			} else {
+				System.out.println("Duplicate eliminated");
 			}
 		}		
 		return noDuplicates;

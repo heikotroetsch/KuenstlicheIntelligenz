@@ -1,5 +1,6 @@
 package SeSo;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SeSoState {
@@ -101,7 +102,7 @@ public class SeSoState {
 	
 	@Override 
 	public int hashCode() {
-		return board.hashCode();		
+		return Arrays.hashCode(board);		
 	}
 	
 	@Override 
