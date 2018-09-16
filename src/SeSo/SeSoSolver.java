@@ -10,41 +10,31 @@ public class SeSoSolver {
 	
 	public static void main(String[] args) {
 		System.out.println("Solution: ");
+		long start = System.currentTimeMillis();
 		System.out.println(solve());
+		System.out.println("Time: "+(System.currentTimeMillis()-start)+"ms");
+		
 	}
 	
 	private static String solve() {
 		HashSet<SeSoState> visitedNodes = new HashSet<SeSoState>();
 		List<SeSoState> todo = new ArrayList<SeSoState>();
 		todo.add(new SeSoState());
-		int depth = 0;
 		while(!todo.isEmpty()) {
-			System.out.println("f1");
-			System.out.println(depth++);
-			for(int i = 0; i< todo.size(); i++) {
-				System.out.println(todo.size());
-				SeSoState s = todo.get(i);
-				if(s.isSolution()) {
-					return s.toString();
-				} else {
-					List<SeSoState> expandedStates = s.expand();
-					todo.addAll(addWithoutDuplicates(visitedNodes,expandedStates));
+				SeSoState s = todo.get(0);
+				if(!visitedNodes.contains(s)) {
+					if(s.isSolution()) {
+						return s.toString(); 
+					} else {
+						visitedNodes.add(s);
+						todo.addAll(s.expand());
+						todo.remove(0);
+					}
+				}else {
+					todo.remove(0);
 				}
 			}
-		}
+		System.out.println(visitedNodes.size());
 		return "failed";
-	}
-	
-	private static List<SeSoState>addWithoutDuplicates(HashSet<SeSoState> visitedNodes, List<SeSoState> nodes) {
-		List<SeSoState> noDuplicates = new ArrayList<SeSoState>();
-		for(SeSoState s : nodes) {
-			if(!visitedNodes.contains(s)) {
-				noDuplicates.add(s);
-				System.out.println("no Duplicate");
-			} else {
-				System.out.println("Duplicate eliminated");
-			}
-		}		
-		return noDuplicates;
 	}
 }

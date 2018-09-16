@@ -1,6 +1,8 @@
 package SeSo;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class SeSoState {
@@ -16,21 +18,18 @@ public class SeSoState {
 	}
 	
 	//Erzeugt einen Zustand, bei dem ausgehend vom Zustand other das leere Feld durch die spezifizierte Figur aufgezogen wurde. 
-	private SeSoState(SeSoState other, int token) {
+	public SeSoState(SeSoState other, int token) {
 		parent = other;	
 		lastMove = token;
-		board = new int[17];
-		for(int i = 0; i < other.board.length; i++) {
-			board[i] = other.board[i];
-		}
+		board = other.board.clone();
 		int temp = board[token];
 		board[getEmptyField(board)] = temp;
 		board[token] = 0;				
 	}	
 	
-	public static int getEmptyField(int[] board) {
-		for(int i = 0; i < board.length; i++) {
-			if (board[i] == 0) {
+	public int getEmptyField(int[] board) {
+		for(int i = 0; i<board.length;i++) {
+			if(board[i]==0) {
 				return i;
 			}
 		}
@@ -40,29 +39,15 @@ public class SeSoState {
 	public List<SeSoState> expand(){
 		ArrayList<SeSoState> children = new ArrayList<SeSoState>();
 		int[] neighbours = SeSoHelper.getNeighbours(getEmptyField(board));
-		for(int i = 1; i < neighbours.length; i++) {
+		for(int i = 0; i < neighbours.length; i++) {
 			children.add(new SeSoState(this,neighbours[i]));
 		}
 		return children;
 	}
 	
 	public boolean isSolution() {
-		for(int i = 0 ; i < 17; i++) {
-			if(i < 8) {
-				if(board[i] != 1) {
-					return false;
-				}
-			} else if(i == 8) {
-				if(board[i] != 0) {
-					return false;
-				}
-			} else {
-				if(board[i] != -1) {
-					return false;
-				}				
-			}
-		}
-		return true;
+		return Arrays.hashCode(board)==SeSoHelper.getSolutionHash();	
+
 	}
 	
 	public String toString_visual() {
@@ -107,23 +92,17 @@ public class SeSoState {
 	
 	@Override 
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null) return false;
-		if(this.getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null) {
+			return false;
+		}
+		if(this.getClass() != o.getClass()) {
+			return false;
+		}
 		SeSoState sesoState = (SeSoState) o;
-		return this.board.hashCode() == sesoState.board.hashCode();
+		return this.hashCode() == sesoState.hashCode();
 	}
 	
-	public static void main(String[] args) {
-		SeSoState x = new SeSoState();
-		SeSoState y = new SeSoState(x, 7);
-		SeSoState z = new SeSoState(y, 8);
-		System.out.println(z.toString_visual());
-		System.out.println(x.toString_visual());
-		System.out.println(x.equals(z));
-		System.out.println(x.hashCode());
-		System.out.println(y.hashCode());
-		System.out.println(z.hashCode());
-		
-	}
 }
