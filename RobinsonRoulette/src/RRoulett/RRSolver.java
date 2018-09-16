@@ -23,6 +23,7 @@ public class RRSolver {
     }
   }
 
+
   /**
    * Sucht nach einer Loesung fuer n-Robinson-Roulette mit Hilfe einer Tiefensuche und gibt diese
    * als String zurueck
