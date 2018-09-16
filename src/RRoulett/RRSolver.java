@@ -1,4 +1,5 @@
 package RRoulett;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class RRSolver {
     try {
       System.out.print("Solution: ");
       System.out.println(solve(size));
+      System.out.println(solveBonus(size));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -52,5 +54,31 @@ public class RRSolver {
         }
       }
     }
+  }
+
+  /**
+   * Sucht nach einer Loesung fuer n-Robinson-Roulette mit Hilfe einer Tiefensuche und gibt diese
+   * als String zurueck
+   */
+  private static int solveBonus(int n) throws Exception {
+    /*
+     * Hier ist die Lösung für die Bonusaufgabe
+     */
+    List<RRState> loesungen = new LinkedList<RRState>();
+    List<RRState> todo = new LinkedList<RRState>();
+    todo.add(new RRState(n));
+    while (todo.size() != 0) {
+      System.out.println(todo.size());
+      RRState s = todo.get(todo.size() - 1);
+      if (s.isSolution()) {
+        loesungen.add(s);
+        todo.remove(todo.size() - 1);
+      } else {
+        List<RRState> expandedStates = s.expand();
+        todo.remove(todo.size() - 1);
+        todo.addAll(expandedStates);
+      }
+    }
+    return loesungen.size();
   }
 }
