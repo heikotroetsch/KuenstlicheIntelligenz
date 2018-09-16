@@ -59,6 +59,20 @@ public class SeSoState {
 		return s.toString();
 	}
 	
+	public String toStringVisualMoves() {
+		if(parent == null) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		SeSoState cur = this;
+		while(cur.parent!=null) {
+			sb.insert(0, cur.toString_visual()+"\n");
+			cur = cur.parent;
+		}
+		sb.deleteCharAt(sb.length()-1);
+		return sb.toString();
+	}
+	
 	@Override 
 	public String toString() {
 		if(parent == null) {
@@ -67,12 +81,11 @@ public class SeSoState {
 		StringBuilder sb = new StringBuilder();
 		SeSoState cur = this;
 		while(cur.parent!=null) {
-			sb.append(cur.lastMove);
-			sb.append('-');
+			sb.insert(0, cur.lastMove+"-");
 			cur = cur.parent;
 		}
 		sb.deleteCharAt(sb.length()-1);
-		return sb.toString();
+		return sb.toString()+"\n"+this.toStringVisualMoves();
 	}
 	
 	private char gs(int n) {

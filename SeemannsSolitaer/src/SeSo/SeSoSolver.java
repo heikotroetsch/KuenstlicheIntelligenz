@@ -13,7 +13,6 @@ public class SeSoSolver {
 		long start = System.currentTimeMillis();
 		System.out.println(solve());
 		System.out.println("Time: "+(System.currentTimeMillis()-start)+"ms");
-		
 	}
 	
 	private static String solve() {
