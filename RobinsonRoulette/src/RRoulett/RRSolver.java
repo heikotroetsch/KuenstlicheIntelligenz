@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * Diese Klasse sucht nach Loesungen des n-RR Spiels
  */
+
 public class RRSolver {
 
   public static void main(String[] args) {
