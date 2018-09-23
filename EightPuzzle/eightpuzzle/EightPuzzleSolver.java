@@ -8,11 +8,13 @@ public class EightPuzzleSolver {
 	public static void main(String[] args) {
 		System.out.println("Solution: ");
 		long start = System.currentTimeMillis();
-		System.out.println(solve());
-		System.out.println("Time: " + (System.currentTimeMillis() - start) + "ms");
+		EightPuzzleState sol = solve();
+		long end = System.currentTimeMillis() - start;
+		System.out.println(sol);
+		System.out.println("in " + end + " ms");
 	}
 
-	private static String solve() {
+	private static EightPuzzleState solve() {
 		PriorityQueue<EightPuzzleState> todo = new PriorityQueue<EightPuzzleState>(new EightPuzzleComparator());
 		HashSet<EightPuzzleState> visitedNodes = new HashSet<EightPuzzleState>();
 		todo.add(new EightPuzzleState());
@@ -20,14 +22,14 @@ public class EightPuzzleSolver {
 			EightPuzzleState s = todo.poll();
 			if (!visitedNodes.contains(s)) {
 				if (s.isSolution()) {
-					return s.toString();
+					return s;
 				} else {
 					visitedNodes.add(s);
 					todo.addAll(s.expand());
 				}
 			}
 		}
-		return "failed";
+		return null;
 	}
 
 }
