@@ -1,6 +1,5 @@
 package eightpuzzle;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.PriorityQueue;
 
@@ -15,15 +14,19 @@ public class EightPuzzleSolver {
 
 	private static String solve() {
 		PriorityQueue<EightPuzzleState> todo = new PriorityQueue<EightPuzzleState>(new EightPuzzleComparator());
+		HashSet<EightPuzzleState> visitedNodes = new HashSet<EightPuzzleState>();
 		todo.add(new EightPuzzleState());
-			while (!todo.isEmpty()) {		
+		while (!todo.isEmpty()) {
 			EightPuzzleState s = todo.poll();
+			if (!visitedNodes.contains(s)) {
 				if (s.isSolution()) {
-					return "found one";
+					return s.toString();
 				} else {
+					visitedNodes.add(s);
 					todo.addAll(s.expand());
 				}
 			}
+		}
 		return "failed";
 	}
 
