@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="RobinsonRoulette/src"/>
+	<classpathentry kind="src" path="SeemannsSolitaer/src"/>
+	<classpathentry kind="src" path="EightPuzzle"/>
+	<classpathentry kind="output" path="RobinsonRoulette/bin"/>
+</classpath>
