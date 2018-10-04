@@ -16,7 +16,7 @@ public class GameClient {
 
 	public GameClient() {
 		//TODO Hier Instanz eurer AI erzeugen.
-		this.ai = new ai.RandomAI();
+		this.ai = new ai.ConcreteAI();
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -27,7 +27,7 @@ public class GameClient {
 			System.out.println("Name: " + client.ai.getName());
 			InputStreamReader isr = new InputStreamReader(System.in);
 			BufferedReader br = new BufferedReader(isr);
-			System.out.print("Spielnummer eingeben (0 für neues Spiel): ");
+			System.out.print("Spielnummer eingeben (0 fï¿½r neues Spiel): ");
 			String eingabe = br.readLine();
 			int playMode = Integer.parseInt(eingabe);
 
