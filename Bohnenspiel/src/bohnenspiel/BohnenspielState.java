@@ -23,7 +23,7 @@ public class BohnenspielState {
 		lastMove = 0; 
 	}
 	
-	//Erzeugt einen Zustand, bei dem ausgehend vom Zustand old, ein Zug ausgeführt wurde. 
+	//Erzeugt einen Zustand, bei dem ausgehend vom Zustand old, ein Zug ausgefï¿½hrt wurde. 
 	public BohnenspielState(BohnenspielState old, int index) {
 		parent = old;
 		lastMove = index;
@@ -101,10 +101,29 @@ public class BohnenspielState {
 	
 	public List<BohnenspielState> expand(){
 		ArrayList<BohnenspielState> children = new ArrayList<BohnenspielState>();
-		//TODO TURN Berücksichtigen
-		for(int i = 0; i < 6; i++) {
-			if(board[i]!= 0) {
-				children.add(new BohnenspielState(this,i));
+		if(this.aiTurn&&this.aiPosition) {
+			for(int i = 0; i < 6; i++) {
+				if(board[i]!= 0) {
+					children.add(new BohnenspielState(this,i));
+				}
+			}
+		} else if(this.aiTurn&&!this.aiPosition) {
+			for(int i = 6; i < 12; i++) {
+				if(board[i]!= 0) {
+					children.add(new BohnenspielState(this,i));
+				}
+			}
+		}else if(!this.aiTurn&&this.aiPosition) {
+			for(int i = 6; i < 12; i++) {
+				if(board[i]!= 0) {
+					children.add(new BohnenspielState(this,i));
+				}
+			}
+		}else if(!this.aiTurn&&!this.aiPosition) {
+			for(int i = 0; i < 6; i++) {
+				if(board[i]!= 0) {
+					children.add(new BohnenspielState(this,i));
+				}
 			}
 		}
 		return children;
