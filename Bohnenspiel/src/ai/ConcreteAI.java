@@ -2,12 +2,12 @@ package ai;
 
 import java.util.Random;
 
-import bohnenspiel.Bohnenspiel;
+import bohnenspiel.BohnenspielState;
 
 public class ConcreteAI extends AI {
 
 Random rand = new Random();
-Bohnenspiel spiel = new Bohnenspiel();
+BohnenspielState spiel = new BohnenspielState();
 	
 	public int getMove(int enemyIndex) {
 		int index = 0;

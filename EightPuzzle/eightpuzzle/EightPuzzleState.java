@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import SeSo.SeSoState;
-
 public class EightPuzzleState {
 
 	private int[] board;
