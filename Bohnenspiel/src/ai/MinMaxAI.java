@@ -6,25 +6,38 @@ import bohnenspiel.BohnenspielState;
 
 public class MinMaxAI extends AI {
 
+	BohnenspielState state;
+	boolean initialized = false;
 	Random rand = new Random();
-	BohnenspielState spiel = new BohnenspielState(true);
+
+	public MinMaxAI() {
+		state = new BohnenspielState();
+	}
 
 	public int getMove(int enemyIndex) {
 		int index = 0;
 		// have to choose the first move
 		if (enemyIndex == -1) {
-			index = rand.nextInt(6) + 1;
+			state.setAiTurn(true, true);
+			initialized = true;
 		}
-		// enemy acted and i have to react
+		// enemy acted and i have to react	---   1-6
 		else if (enemyIndex > 0 && enemyIndex <= 6) {
-			spiel.makeMove(enemyIndex, false);
+			if (!initialized) {
+				state.setAiTurn(false, false);
+				initialized = true;				
+			}
 			index = rand.nextInt(6) + 7;
+			state = new BohnenspielState(state, index);
+		//enemy acted and i have to react   ---   7-12	
 		} else if (enemyIndex > 6 && enemyIndex <= 12) {
-			spiel.makeMove(enemyIndex, false);
+			if (!initialized) {
+				state.setAiTurn(false, true);
+				initialized = true;				
+			}
 			index = rand.nextInt(6) + 1;
+			state = new BohnenspielState(state, index);
 		}
-
-		spiel.makeMove(index, true);
 		return index;
 	}
 
@@ -36,29 +49,27 @@ public class MinMaxAI extends AI {
 			int best = -1000;
 			// Traverse all possible moves
 			for (BohnenspielState bs : bss.expand()) {
-				best = Math.max(best, minimax(bs, depth + 1, !isMaximizingPlayer));
+				best = Math.max(best, minimax(bs, depth - 1, !isMaximizingPlayer));
 			}
 			return best;
 		} else {
 			int best = 1000;
-
 			// Traverse all possible moves
 			for (BohnenspielState bs : bss.expand()) {
-				best = Math.min(best, minimax(bs, depth + 1, !isMaximizingPlayer));
+				best = Math.min(best, minimax(bs, depth - 1, !isMaximizingPlayer));
 			}
 			return best;
 		}
-
 	}
-	
+
 	private int findBestMove(BohnenspielState bss) {
 		int bestVal = -1000;
 		int bestMove = -1;
-		
-		//Traverse all possible moves
-		for(BohnenspielState bs : bss.expand()) {
-			int moveVal = minimax(bss, 0, false);
-			if(moveVal > bestVal) {
+
+		// Traverse all possible moves
+		for (BohnenspielState bs : bss.expand()) {
+			int moveVal = minimax(bss, 10, bs.getAITurn());
+			if (moveVal > bestVal) {
 				bestMove = bs.getLastMove();
 				bestVal = moveVal;
 			}
@@ -75,5 +86,10 @@ public class MinMaxAI extends AI {
 	@Override
 	public String getName() {
 		return "Concrete AI";
+	}
+
+	public static void main(String[] args) {
+		boolean x1;
+		System.out.println();
 	}
 }
