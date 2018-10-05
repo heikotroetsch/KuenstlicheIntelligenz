@@ -50,7 +50,7 @@ public class MinMaxAI extends AI {
 	}
 
 	private int minimax(BohnenspielState bss, int depth, int alpha, int beta, boolean isMaximizingPlayer) {
-		if (depth == 0) {
+		if (depth == 0 || bss.expand().isEmpty()) {
 			return bss.calculateHeuristivValue();
 		}
 		if (isMaximizingPlayer) {
