@@ -68,7 +68,7 @@ public class MinMaxAI extends AI {
 			int value = MAX;
 			// Traverse all possible moves
 			for (BohnenspielState bs : bss.expand()) {
-				value = Math.min(value, minimax(bs, depth - 1, alpha, beta, !isMaximizingPlayer));
+				value = Math.min(value, minimax(bs, depth - 1, alpha, beta, isMaximizingPlayer));
 				beta = Math.min(beta, value);
 				if (alpha >= beta) {
 					break;
