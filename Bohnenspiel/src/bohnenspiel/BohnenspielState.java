@@ -32,10 +32,10 @@ public class BohnenspielState {
 		scoreEnemy = old.scoreEnemy;
 		this.aiTurn = !old.aiTurn;
 		this.aiPosition = old.aiPosition;
-		makeMove(index, aiTurn);		
+		makeMove(index);		
 	}
 	
-	public void makeMove(int index, boolean aiTurn) {
+	public void makeMove(int index) {
 //		index--;
 		int beans = board[index];
 		board[index] = 0;
@@ -45,10 +45,10 @@ public class BohnenspielState {
 			board[(index)%12]++;
 			beans--;
 		}
-		checkScore((index)%12, aiTurn);
+		checkScore((index)%12);
 	}
 
-	public void checkScore(int index, boolean aiTurn){
+	public void checkScore(int index){
 		if(board[index]==2||board[index]==4||board[index]==6) {
 			if(aiTurn) {
 				scoreAI += board[index];
@@ -56,7 +56,7 @@ public class BohnenspielState {
 				scoreEnemy += board[index];
 			}
 			board[index] = 0;
-			checkScore(Math.floorMod(index-1, 12), aiTurn);
+			checkScore(Math.floorMod(index-1, 12));
 		}
 	}
 	
