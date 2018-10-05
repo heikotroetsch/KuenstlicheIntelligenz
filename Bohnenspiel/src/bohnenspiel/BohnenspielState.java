@@ -46,7 +46,30 @@ public class BohnenspielState {
 			beans--;
 		}
 		checkScore((index)%12);
+		if(this.expand().isEmpty()) {
+			addBeansToScore();
+		}
 	//	System.out.println(this);
+	}
+
+	private void addBeansToScore() {
+		if(this.aiPosition) {
+			for(int i = 0; i < 12; i++) {
+				if(i < 6) {
+					this.scoreAI += board[i];
+				}else {
+					this.scoreEnemy += board[i];
+				}
+			}
+		} else{
+			for(int i = 0; i < 12; i++) {
+				if(i >= 6) {
+					this.scoreAI += board[i];
+				}else {
+					this.scoreEnemy += board[i];
+				}
+			}
+		}
 	}
 
 	public void checkScore(int index){
