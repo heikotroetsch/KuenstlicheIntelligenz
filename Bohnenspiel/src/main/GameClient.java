@@ -16,7 +16,8 @@ public class GameClient {
 
 	public GameClient() {
 		//TODO Hier Instanz eurer AI erzeugen.
-		this.ai = new ai.MinMaxAI();
+		this.ai = new ai.ConcreteAI();
+		//this.ai = new ai.MinMaxAI();
 	}
 	
 	public static void main(String[] args) throws Exception {

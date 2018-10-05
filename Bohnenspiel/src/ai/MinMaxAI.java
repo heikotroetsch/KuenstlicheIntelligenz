@@ -18,8 +18,10 @@ public class MinMaxAI extends AI {
 		int index = 0;
 		// have to choose the first move
 		if (enemyIndex == -1) {
+			index = rand.nextInt(6)+1;
 			state.setAiTurn(true, true);
 			initialized = true;
+			state = new BohnenspielState(state, index);
 		}
 		// enemy acted and i have to react	---   1-6
 		else if (enemyIndex > 0 && enemyIndex <= 6) {
@@ -85,11 +87,6 @@ public class MinMaxAI extends AI {
 
 	@Override
 	public String getName() {
-		return "Concrete AI";
-	}
-
-	public static void main(String[] args) {
-		boolean x1;
-		System.out.println();
+		return "MinMax AI";
 	}
 }
