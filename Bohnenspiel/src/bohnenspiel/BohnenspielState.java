@@ -46,6 +46,7 @@ public class BohnenspielState {
 			beans--;
 		}
 		checkScore((index)%12);
+	//	System.out.println(this);
 	}
 
 	public void checkScore(int index){
@@ -61,9 +62,8 @@ public class BohnenspielState {
 	}
 	
 	public int calculateHeuristivValue() {
+	//System.out.println(scoreAI+ " "+scoreEnemy);
 		int hv = this.scoreAI - scoreEnemy;
-		hv += countBeans(this.aiTurn);
-		//TODO implement countHolesWithScore
 		return hv;		
 	}
 	

@@ -15,32 +15,36 @@ public class MinMaxAI extends AI {
 	}
 
 	public int getMove(int enemyIndex) {
+		System.out.println(enemyIndex);
 		int index = 0;
 		// have to choose the first move
 		if (enemyIndex == -1) {
-			index = rand.nextInt(6)+1;
+			index = findBestMove(state);
 			state.setAiTurn(true, true);
 			initialized = true;
 			state = new BohnenspielState(state, index);
 		}
 		// enemy acted and i have to react	---   1-6
 		else if (enemyIndex > 0 && enemyIndex <= 6) {
+			state = new BohnenspielState(state, enemyIndex--);
 			if (!initialized) {
 				state.setAiTurn(false, false);
 				initialized = true;				
 			}
-			index = rand.nextInt(6) + 7;
+			index = findBestMove(state);
 			state = new BohnenspielState(state, index);
 		//enemy acted and i have to react   ---   7-12	
 		} else if (enemyIndex > 6 && enemyIndex <= 12) {
+			state = new BohnenspielState(state, enemyIndex--);
 			if (!initialized) {
 				state.setAiTurn(false, true);
 				initialized = true;				
 			}
-			index = rand.nextInt(6) + 1;
+			index = findBestMove(state);
 			state = new BohnenspielState(state, index);
 		}
-		return index;
+		System.out.println(state);
+		return index+1;
 	}
 
 	private int minimax(BohnenspielState bss, int depth, boolean isMaximizingPlayer) {
@@ -70,7 +74,8 @@ public class MinMaxAI extends AI {
 
 		// Traverse all possible moves
 		for (BohnenspielState bs : bss.expand()) {
-			int moveVal = minimax(bss, 10, bs.getAITurn());
+			int moveVal = minimax(bss, 8, bs.getAITurn());
+			System.out.println("moveVal: "+moveVal);
 			if (moveVal > bestVal) {
 				bestMove = bs.getLastMove();
 				bestVal = moveVal;
