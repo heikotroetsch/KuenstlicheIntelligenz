@@ -62,27 +62,64 @@ public class BohnenspielState {
 	}
 	
 	public int calculateHeuristivValue() {
-	//System.out.println(scoreAI+ " "+scoreEnemy);
 		int hv = this.scoreAI - scoreEnemy;
+		hv += countBeans()/4;
+		hv += evaluateKill()*4;
 		return hv;		
 	}
 	
-	private int countBeans(boolean aiTurn) {
+	private int countBeans() {
+		int beanCountAI = 0;
+		int beanCountEnemy = 0;
+		if(this.aiPosition) {
+			for(int i = 0; i < 12; i++) {
+				if(i < 6) {
+					beanCountAI += board[i];
+				}else {
+					beanCountEnemy += board[i];
+				}
+			}
+		} else{
+			for(int i = 0; i < 12; i++) {
+				if(i >= 6) {
+					beanCountAI += board[i];
+				}else {
+					beanCountEnemy += board[i];
+				}
+			}
+		}
+		return beanCountAI - beanCountEnemy;
+	}
+	
+	private int evaluateKill() {
 		int beanScoreAI = 0;
 		int beanScoreEnemy = 0;
-		for(int i = 0; i < 12; i++) {
-			if(i < 6) {
-				beanScoreAI += board[i];
-			}else {
-				beanScoreEnemy += board[i];
+		if(this.aiPosition) {
+			for(int i = 0; i < 12; i++) {
+				if(i < 6) {
+					if(board[i]== 2 || board[i]== 4 || board[i]== 6) {
+						beanScoreAI += board[i];
+					}
+				}else {
+					if(board[i]== 2 || board[i]== 4 || board[i]== 6) {
+						beanScoreAI += board[i];
+					}
+				}
+			}
+		} else{
+			for(int i = 0; i < 12; i++) {
+				if(i >= 6) {
+					if(board[i]== 2 || board[i]== 4 || board[i]== 6) {
+						beanScoreAI += board[i];
+					}
+				}else {
+					if(board[i]== 2 || board[i]== 4 || board[i]== 6) {
+						beanScoreAI += board[i];
+					}
+				}
 			}
 		}
 		return beanScoreAI - beanScoreEnemy;
-	}
-	
-	//TODO implement
-	private int countHolesWithScore() {
-		return -1;
 	}
 	
 	public int getLastMove() {
