@@ -81,10 +81,9 @@ public class MinMaxAI extends AI {
 	private int findBestMove(BohnenspielState bss) {
 		int bestVal = -1000;
 		int bestMove = 0;
-
 		// Traverse all possible moves
 		for (BohnenspielState bs : bss.expand()) {
-			int moveVal = minimax(bss, 10, MIN, MAX, true);
+			int moveVal = minimax(bs, 10, MIN, MAX, true);
 //			System.out.println("moveVal: "+moveVal);
 			if (moveVal > bestVal) {
 				bestMove = bs.getLastMove();
@@ -97,6 +96,6 @@ public class MinMaxAI extends AI {
 
 	@Override
 	public String getName() {
-		return "MinMaxad AI";
+		return "MinMaxad dAI";
 	}
 }

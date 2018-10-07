@@ -8,30 +8,27 @@ public class BohnenspielState {
 	
 	int[] board;
 	int scoreAI,scoreEnemy;
-	private BohnenspielState parent;
-	private int lastMove; 
 	private boolean aiTurn;
 	//position for AI 1-6 = true, 7-12 = false
 	private boolean aiPosition;
+	private int lastMove;
 	
 	//Erzeugt das anfaengliche Spielfeld
 	public BohnenspielState() {
 		board = BohnenspielHelper.getBoard();
 		scoreAI = 0;
 		scoreEnemy = 0;
-		parent = null;
-		lastMove = 0; 
-	}
+		lastMove = 0;
+		}
 	
 	//Erzeugt einen Zustand, bei dem ausgehend vom Zustand old, ein Zug ausgef�hrt wurde. 
 	public BohnenspielState(BohnenspielState old, int index) {
-		parent = old;
-		lastMove = index;
 		board = old.board.clone();
 		scoreAI = old.scoreAI;
 		scoreEnemy = old.scoreEnemy;
 		this.aiTurn = !old.aiTurn;
 		this.aiPosition = old.aiPosition;
+		lastMove = index;
 		makeMove(index);		
 	}
 	
