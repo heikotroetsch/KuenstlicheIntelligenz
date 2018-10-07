@@ -14,7 +14,7 @@ public class MinMaxAI extends AI {
 	boolean initialized = false;
 	Random rand = new Random();
 	static int threadFinishCounter = 6;
-	static long timer = 0;
+	public static long timer = 0;
 
 	public MinMaxAI() {
 		state = new BohnenspielState();
@@ -112,7 +112,7 @@ public class MinMaxAI extends AI {
 	
 	@Override
 	public String getName() {
-		return "MinMacxad dAI";
+		return "Bohnigma 2";
 	}
 
 	

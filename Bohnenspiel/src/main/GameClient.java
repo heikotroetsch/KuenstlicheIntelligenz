@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 
 import ai.AI;
+import ai.MinMaxAI;
 
 /** Ausser an der markierten Stelle soll an dieser Klasse nichts veraendert werden. */
 public class GameClient {
@@ -13,6 +14,7 @@ public class GameClient {
 	
 	private String gameID;
 	private AI ai;
+	private boolean firstMove = true;
 
 	public GameClient() {
 		//TODO Hier Instanz eurer AI erzeugen.
@@ -43,6 +45,7 @@ public class GameClient {
 	}
 
 	public void createGame() throws Exception {
+		MinMaxAI.timer = System.currentTimeMillis()+600;
 		String url = SERVER_ADDRESS + "/api/creategame/" + ai.getName();
 		this.gameID = load(url);
 		System.out.println("Spiel erstellt. ID: " + this.gameID);
@@ -62,6 +65,7 @@ public class GameClient {
 	}
 
 	public void joinGame(String gameID) throws Exception {
+		MinMaxAI.timer = System.currentTimeMillis()+600;
 		String url = SERVER_ADDRESS + "/api/joingame/" + gameID + "/" + ai.getName();
 		this.gameID = gameID;
 		String state = load(url);
@@ -90,7 +94,11 @@ public class GameClient {
 			int stateID = Integer.parseInt(load(stateIdURL));
 
 			if (ownTurn(stateID, moveState, start, end)) {
+				if(!firstMove) {
+					MinMaxAI.timer = System.currentTimeMillis();
+				}
 				makeOwnMove(moveState);
+				firstMove = false;
 			} else if (gameIsFinished(stateID, moveState)) {
 				checkURL = SERVER_ADDRESS + "/api/statemsg/" + this.gameID;
 				System.out.println("Das Spiel wurde beendet.");

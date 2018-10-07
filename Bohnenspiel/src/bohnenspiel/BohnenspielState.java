@@ -49,7 +49,7 @@ public class BohnenspielState {
 
 	public void checkScore(int index){
 		if(board[index]==2||board[index]==4||board[index]==6) {
-			if(aiTurn) {
+			if(!aiTurn) {
 				scoreAI += board[index];
 			}else {
 				scoreEnemy += board[index];
@@ -60,10 +60,34 @@ public class BohnenspielState {
 	}
 	
 	public int calculateHeuristivValue() {
-		int hv = this.scoreAI - scoreEnemy;
-		hv += countBeans()/4;
-		hv += evaluateKill()*4;
-		return hv;		
+		int heuristic = this.scoreAI - scoreEnemy;
+		heuristic += countPossiblePlays() * 10;
+		heuristic += countBeans() / 4;
+		//heuristic += evaluateKill() * 4;
+		return heuristic;		
+	}
+	
+	private int countPossiblePlays() {
+		int playCountAI = 0;
+		int playCountEnemy = 0;
+		if(this.aiPosition) {
+			for(int i = 0; i < 12; i++) {
+				if(i < 6 && board[i]==0) {
+					playCountAI++;
+				}else if(i >= 6 && board[i]==0){
+					playCountEnemy++;
+				}
+			}
+		} else{
+			for(int i = 0; i < 12; i++) {
+				if(i >= 6  && board[i]==0) {
+					playCountAI++;
+				}else if(i < 6 && board[i]==0){
+					playCountEnemy++;
+				}
+			}
+		}
+		return playCountEnemy - playCountAI;
 	}
 	
 	private int countBeans() {
