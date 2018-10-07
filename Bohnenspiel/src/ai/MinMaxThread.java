@@ -17,13 +17,14 @@ public class MinMaxThread extends Thread{
 	
 	@Override
 	public void run() {
-		this.value = minimax(state,13,MIN,MAX,true);
+		this.value = minimax(state,20,MIN,MAX,true);
 		System.out.println(this.value+" ");
 		MinMaxAI.threadFinishCounter++;
 	}
 	
 	private int minimax(BohnenspielState bss, int depth, int alpha, int beta, boolean isMaximizingPlayer) {
-		if (depth == 0 || bss.expand().isEmpty()) {
+		System.out.println("time left "+ (System.currentTimeMillis() - MinMaxAI.timer));
+		if (depth == 0 || bss.expand().isEmpty() || System.currentTimeMillis() - MinMaxAI.timer > 2900) {
 			return bss.calculateHeuristivValue();
 		}
 		if (isMaximizingPlayer) {

@@ -14,12 +14,14 @@ public class MinMaxAI extends AI {
 	boolean initialized = false;
 	Random rand = new Random();
 	static int threadFinishCounter = 6;
+	static long timer = 0;
 
 	public MinMaxAI() {
 		state = new BohnenspielState();
 	}
 
 	public int getMove(int enemyIndex) {
+		timer = System.currentTimeMillis();
 		int index = 0;
 		// have to choose the first move
 		if (enemyIndex == -1) {
@@ -96,7 +98,7 @@ public class MinMaxAI extends AI {
 
 		while(threadFinishCounter!=6) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
