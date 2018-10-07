@@ -1,5 +1,6 @@
 package ai;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -85,11 +86,12 @@ public class MinMaxAI extends AI {
 		List<BohnenspielState> bsList = state.expand();
 		
 		PriorityQueue<MinMaxThread> threadPQueue = new PriorityQueue<MinMaxThread>(new MinMaxThreadComparator());
+		MinMaxThread[] threadArray = new MinMaxThread[bsList.size()];
 		
 		for(int i = 0; i < bsList.size(); i++) {
 			MinMaxThread temp = new MinMaxThread(bsList.get(i));
 			temp.start();
-			threadPQueue.add(temp);
+			threadArray[i] = temp;
 		}
 
 		while(threadFinishCounter!=6) {
@@ -99,9 +101,11 @@ public class MinMaxAI extends AI {
 				e.printStackTrace();
 			}
 		}
+		threadPQueue.addAll(Arrays.asList(threadArray));
 		
-		
-		return threadPQueue.peek().getBState().getLastMove();
+		MinMaxThread temp = threadPQueue.poll();
+		System.out.println("The best move has the Value: "+ temp.getValue());
+		return temp.getBState().getLastMove();
 	}
 	
 	@Override

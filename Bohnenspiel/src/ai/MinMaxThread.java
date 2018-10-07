@@ -17,7 +17,8 @@ public class MinMaxThread extends Thread{
 	
 	@Override
 	public void run() {
-		this.value = minimax(state,10,MIN,MAX,true);		
+		this.value = minimax(state,13,MIN,MAX,true);
+		System.out.println(this.value+" ");
 		MinMaxAI.threadFinishCounter++;
 	}
 	
