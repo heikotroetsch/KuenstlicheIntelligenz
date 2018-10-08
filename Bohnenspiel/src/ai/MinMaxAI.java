@@ -13,9 +13,10 @@ public class MinMaxAI extends AI {
 	BohnenspielState state;
 	boolean initialized = false;
 	Random rand = new Random();
-	static int threadFinishCounter = 6;
-	public static long timer = 0;
 
+	public static long timer = 0;
+	
+	
 	public MinMaxAI() {
 		state = new BohnenspielState();
 	}
@@ -53,37 +54,10 @@ public class MinMaxAI extends AI {
 		return index + 1;
 	}
 
-//	private int minimax(BohnenspielState bss, int depth, int alpha, int beta, boolean isMaximizingPlayer) {
-//		if (depth == 0 || bss.expand().isEmpty()) {
-//			return bss.calculateHeuristivValue();
-//		}
-//		if (isMaximizingPlayer) {
-//			int value = MIN;
-//			// Traverse all possible moves
-//			for (BohnenspielState bs : bss.expand()) {
-//				value = Math.max(value, minimax(bs, depth - 1, alpha, beta, !isMaximizingPlayer));
-//				alpha = Math.max(alpha, value);
-//				if (alpha >= beta) {
-//					System.out.println("pruned");
-//					break;
-//				}
-//			}
-//			return value;
-//		} else {
-//			int value = MAX;
-//			// Traverse all possible moves
-//			for (BohnenspielState bs : bss.expand()) {
-//				value = Math.min(value, minimax(bs, depth - 1, alpha, beta, !isMaximizingPlayer));
-//				beta = Math.min(beta, value);
-//				if (alpha >= beta) {
-//					System.out.println("pruned");
-//					break;
-//				}
-//			}
-//			return value;
-//		}
-//	}
-
+	/**
+	 * Finds the best move by using a minimax algorithm. Expands the current node and makes a minimax tree for each possible play in a thread.
+	 * @return the best move by int. 
+	 */
 	private int findBestMove() {
 		List<BohnenspielState> bsList = state.expand();
 		
@@ -94,14 +68,14 @@ public class MinMaxAI extends AI {
 			MinMaxThread temp = new MinMaxThread(bsList.get(i));
 			temp.start();
 			threadArray[i] = temp;
-		}
+		} 
 
-		while(threadFinishCounter!=6) {
+		for(Thread t : threadArray) {
 			try {
-				Thread.sleep(5);
+				t.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			}
+			}			
 		}
 		threadPQueue.addAll(Arrays.asList(threadArray));
 		
@@ -112,7 +86,7 @@ public class MinMaxAI extends AI {
 	
 	@Override
 	public String getName() {
-		return "Bohnigma 2";
+		return "Bohnigma";
 	}
 
 	
