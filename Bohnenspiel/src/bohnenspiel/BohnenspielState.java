@@ -49,7 +49,7 @@ public class BohnenspielState {
 
 	public void checkScore(int index){
 		if(board[index]==2||board[index]==4||board[index]==6) {
-			if(!aiTurn) {
+			if(aiTurn) {
 				scoreAI += board[index];
 			}else {
 				scoreEnemy += board[index];
