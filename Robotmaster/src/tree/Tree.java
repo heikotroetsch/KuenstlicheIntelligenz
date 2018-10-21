@@ -1,10 +1,12 @@
 package tree;
 
+import monteCarlo.State;
+
 public class Tree {
 	Node root;
 	
-	public Tree() {
-		root = new Node();
+	public Tree(State state) {
+		root = new Node(state);
 	}
 	
 	public Node getRoot() {

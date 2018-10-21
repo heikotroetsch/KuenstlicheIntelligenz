@@ -13,10 +13,6 @@ public class Node {
 	Node parent;
 	List<Node> childArray;
 
-	public Node() {
-		this.state = new State(0, null, 0);
-		childArray = new ArrayList<>();
-	}
 	
 	public Node(State state) {
 		this.state = state;

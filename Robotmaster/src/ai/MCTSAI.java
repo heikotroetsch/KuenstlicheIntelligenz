@@ -34,6 +34,7 @@ public class MCTSAI extends AI {
 
 	@Override
 	public Move action(Move move) {
+		System.out.println("Called");
 		if (!initialized) {
 			if (move != null) {
 				status.performMove(move);

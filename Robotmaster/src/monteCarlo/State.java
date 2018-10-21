@@ -7,6 +7,7 @@ import java.util.List;
 import game.Move;
 
 public class State {
+	public int level = 0;
 	private int[][] board;
 	private int playerNo = 1;
 	private int visitCount;
@@ -32,10 +33,28 @@ public class State {
 	}
 
 	public State(State state) {
-		this.board = state.board.clone();
+		this.board = new int[5][5];
+		for(int i = 0; i < state.board.length; i++) {
+			this.board[i] = Arrays.copyOf(state.board[i], state.board[i].length);
+		}
 		this.visitCount = state.getVisitCount();
 		this.winScore = state.getWinScore();
-		playerHands = state.getPlayerHands();
+		ArrayList<Integer> player1Cards = new ArrayList<Integer>();
+		ArrayList<Integer> player2Cards = new ArrayList<Integer>();
+		for(int card : state.playerHands.get(0)) {
+			player1Cards.add(card);
+		}
+		for(int card : state.playerHands.get(1)) {
+			player2Cards.add(card);
+		}
+		this.playerHands.add(player1Cards);
+		this.playerHands.add(player2Cards);
+		
+	}
+	
+	//dirty fix
+	private int getCurrentPlayer() {
+		return playerHands.get(1).size() > playerHands.get(0).size() ? 1:0;
 	}
 
 	public int[] getPlayedCards() {
@@ -87,8 +106,8 @@ public class State {
 	}
 
 	public List<int[]> getAllPossiblePositions() {
+		System.out.println("posspos called");
 		List<int[]> possibleMoves = new ArrayList<>();
-		int value = 0;
 		for (int i = 0; i < 5; i++) {
 			for (int j = 0; j < 5; j++) {
 				if (this.validPosition(i, j)) {
@@ -96,19 +115,24 @@ public class State {
 				}
 			}
 		}
+		System.out.println(this);
 		return possibleMoves;
 	}
 
 	public List<State> getAllPossibleStates() {
 		List<State> possibleStates = new ArrayList<>();
-		int card = 5;
+
 		// simulate Enemys hand
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				if (this.validPosition(i, j)) {
-					State newState = new State(this);
-					newState.performMove(new Move(i, j, card));
-					possibleStates.add(newState);
+		for (int card : playerHands.get(getCurrentPlayer())) {
+			for (int i = 0; i < 5; i++) {
+				for (int j = 0; j < 5; j++) {
+					if (this.validPosition(i, j)) {
+						State newState = new State(this);
+						newState.performMove(new Move(i, j, card));
+						newState.getPlayerHands().get(getCurrentPlayer()).remove(new Integer(card));
+						newState.togglePlayer();
+						possibleStates.add(newState);
+					}
 				}
 			}
 		}
@@ -130,8 +154,9 @@ public class State {
 	}
 
 	public void performMove(Move mv) {
-		board[mv.getX()][mv.getY()] = mv.getV();
+		this.board[mv.getX()][mv.getY()] = mv.getV();
 		this.setLastTurn(mv);
+		level++;
 	}
 
 	public Move getLastTurn() {
@@ -153,9 +178,10 @@ public class State {
 		int selectRandom = (int) (Math.random() * totalPossibilities);
 		int[] movePos = availablePositions.get(selectRandom);
 		// get a random card from the hand of the player whose turn it is
-		totalPossibilities = playerHands.get(playerNo - 1).size();
+		totalPossibilities = playerHands.get(getCurrentPlayer()).size();
 		selectRandom = (int) (Math.random() * totalPossibilities);
-		Move move = new Move(movePos[0],movePos[1], playerHands.get(playerNo-1).remove(selectRandom));
+		System.out.println("flag");
+		Move move = new Move(movePos[0], movePos[1], playerHands.get(getCurrentPlayer()).remove(selectRandom));
 		this.performMove(move);
 	}
 
@@ -164,11 +190,9 @@ public class State {
 	}
 
 	public int checkStatus() {
-		if(!(playerHands.get(0).isEmpty()&&playerHands.get(1).isEmpty())) {
+		if (!(playerHands.get(0).isEmpty() && playerHands.get(1).isEmpty())) {
 			return IN_PROGRESS;
 		}
-		// getLowestScoreForTheRowPlayer Player 1
-		// TODO Check if correct
 		int rowScoreLow = Integer.MAX_VALUE;
 		int lineScoreLow = Integer.MAX_VALUE;
 		for (int i = 0; i < 5; i++) {
@@ -178,8 +202,6 @@ public class State {
 				rowScoreLow = rowScoreCurr;
 			}
 		}
-
-		// getLowstScoreForTheLinePlayer Player 2
 		for (int i = 0; i < 5; i++) {
 			int lineScoreCurr = calculateLineScore(
 					new int[] { board[0][i], board[1][i], board[2][i], board[3][i], board[4][i] });
@@ -187,7 +209,7 @@ public class State {
 				lineScoreLow = lineScoreCurr;
 			}
 		}
-		System.out.println("P1: " +rowScoreLow+"| P2: "+lineScoreLow);
+		System.out.println("P1: " + rowScoreLow + "| P2: " + lineScoreLow);
 		return rowScoreLow == lineScoreLow ? DRAW : rowScoreLow > lineScoreLow ? WINP1 : WINP2;
 	}
 
@@ -198,7 +220,6 @@ public class State {
 		for (int i : line) {
 			strline += "" + i;
 		}
-		System.out.print(strline+" ");
 		String[] dups = strline.split("(?<=(.))(?!\\1)");
 		for (String ele : dups) {
 			switch (ele.length()) {
@@ -218,16 +239,15 @@ public class State {
 				score += 100 + 10 * Integer.parseInt("" + ele.charAt(0));
 			}
 		}
-		System.out.println(score);
 		return score;
 	}
-	
+
 	public void addScore(double score) {
-		if(this.winScore != Integer.MIN_VALUE) {
+		if (this.winScore != Integer.MIN_VALUE) {
 			this.winScore += score;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -245,17 +265,17 @@ public class State {
 	}
 
 	public static void main(String[] args) {
-		ArrayList<Integer> h1 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1,5,5,5));
-		ArrayList<Integer> h2 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1,5,5,5));
+		ArrayList<Integer> h1 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1, 5, 5, 5));
+		ArrayList<Integer> h2 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1, 5, 5, 5));
 		State s1 = new State(4, h1, h2);
-		while(s1.checkStatus()==IN_PROGRESS) {
+		System.out.println(s1.getAllPossibleStates().size());
+		while (s1.checkStatus() == IN_PROGRESS) {
 			s1.randomPlay();
 			s1.togglePlayer();
 			System.out.println(s1);
 		}
 		System.out.println(s1.checkStatus());
-	
-		
+
 	}
 
 }
