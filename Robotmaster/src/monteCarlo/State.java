@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ai.MCTSAI;
 import game.Move;
 
 public class State {
@@ -12,65 +13,64 @@ public class State {
 	private int playerNo = 1;
 	private int visitCount;
 	private double winScore;
-	private int[] playedCards = { 6, 6, 6, 6, 6, 6 };
-	private ArrayList<ArrayList<Integer>> playerHands = new ArrayList<ArrayList<Integer>>();
-	private Move lastTurn;
+	private int[] cardsPlayed = new int[]{0,0};
 
+
+	@SuppressWarnings("unchecked")
+	ArrayList<Integer>[] hands = new ArrayList[2];
+		private Move lastTurn;
 	public static final int IN_PROGRESS = -1;
 	public static final int DRAW = 0;
 	public static final int WINP1 = 1;
 	public static final int WINP2 = 2;
 
-	public State(int mid, ArrayList<Integer> player1card, ArrayList<Integer> player2card) {
+	public State(int mid) {
 		board = new int[5][5];
 		for (int[] row : board) {
 			Arrays.fill(row, -1);
 		}
 		board[2][2] = mid;
-		playerHands.add(player1card);
-		playerHands.add(player2card);
-
 	}
 
 	public State(State state) {
 		this.board = new int[5][5];
-		for(int i = 0; i < state.board.length; i++) {
+		for (int i = 0; i < state.board.length; i++) {
 			this.board[i] = Arrays.copyOf(state.board[i], state.board[i].length);
 		}
 		this.visitCount = state.getVisitCount();
 		this.winScore = state.getWinScore();
+
 		ArrayList<Integer> player1Cards = new ArrayList<Integer>();
 		ArrayList<Integer> player2Cards = new ArrayList<Integer>();
-		for(int card : state.playerHands.get(0)) {
-			player1Cards.add(card);
+		if (state.hands[0] != null) {
+			for (int card : state.hands[0]) {
+				player1Cards.add(card);
+			}
 		}
-		for(int card : state.playerHands.get(1)) {
-			player2Cards.add(card);
+		if (state.hands[1] != null) {
+			for (int card : state.hands[1]) {
+				player2Cards.add(card);
+			}
 		}
-		this.playerHands.add(player1Cards);
-		this.playerHands.add(player2Cards);
-		
+		this.hands[0] = player1Cards;
+		this.hands[1] = player2Cards;
+
 	}
-	
-	//dirty fix
+
+	// dirty fix
 	private int getCurrentPlayer() {
-		return playerHands.get(1).size() > playerHands.get(0).size() ? 1:0;
+//		System.out.println("h0 "+hands[0] == null);
+//		System.out.println("h1 "+hands[1] == null);
+		return hands[1].size() > hands[0].size() ? 1 : 0;
 	}
 
-	public int[] getPlayedCards() {
-		return playedCards;
+	public void setPlayerHand1(ArrayList<Integer> playerHands) {
+		
+		hands[0] = playerHands;
 	}
 
-	public void setPlayedCards(int[] playedCards) {
-		this.playedCards = playedCards;
-	}
-
-	public ArrayList<ArrayList<Integer>> getPlayerHands() {
-		return playerHands;
-	}
-
-	public void setPlayerHands(ArrayList<ArrayList<Integer>> playerHands) {
-		this.playerHands = playerHands;
+	public void setPlayerHand2(ArrayList<Integer> playerHands) {
+		hands[1] = playerHands;
 	}
 
 	public int[][] getBoard() {
@@ -104,9 +104,25 @@ public class State {
 	public void setWinScore(double winScore) {
 		this.winScore = winScore;
 	}
+	
+
+	public ArrayList<Integer>[] getHands() {
+		return hands;
+	}
+
+	public void setHands(ArrayList<Integer>[] hands) {
+		this.hands = hands;
+	}
+	
+	public void removeHandfromMyHand(Move move) {
+		this.hands[MCTSAI.playerNumber-1].remove(new Integer(move.getV()));
+	}
+	
+	public void removeHandfromEnemyHand(Move move) {
+		this.hands[(3-MCTSAI.playerNumber)-1].remove(new Integer(move.getV()));
+	}
 
 	public List<int[]> getAllPossiblePositions() {
-		System.out.println("posspos called");
 		List<int[]> possibleMoves = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			for (int j = 0; j < 5; j++) {
@@ -115,7 +131,6 @@ public class State {
 				}
 			}
 		}
-		System.out.println(this);
 		return possibleMoves;
 	}
 
@@ -123,13 +138,13 @@ public class State {
 		List<State> possibleStates = new ArrayList<>();
 
 		// simulate Enemys hand
-		for (int card : playerHands.get(getCurrentPlayer())) {
+		for (int card : hands[getCurrentPlayer()]) {
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 5; j++) {
 					if (this.validPosition(i, j)) {
 						State newState = new State(this);
 						newState.performMove(new Move(i, j, card));
-						newState.getPlayerHands().get(getCurrentPlayer()).remove(new Integer(card));
+						newState.hands[getCurrentPlayer()].remove(new Integer(card));
 						newState.togglePlayer();
 						possibleStates.add(newState);
 					}
@@ -157,6 +172,11 @@ public class State {
 		this.board[mv.getX()][mv.getY()] = mv.getV();
 		this.setLastTurn(mv);
 		level++;
+		this.cardsPlayed[playerNo-1]++;
+	}
+	
+	public int[] getCardsPlayed() {
+		return this.cardsPlayed;
 	}
 
 	public Move getLastTurn() {
@@ -178,19 +198,20 @@ public class State {
 		int selectRandom = (int) (Math.random() * totalPossibilities);
 		int[] movePos = availablePositions.get(selectRandom);
 		// get a random card from the hand of the player whose turn it is
-		totalPossibilities = playerHands.get(getCurrentPlayer()).size();
+		totalPossibilities = hands[getCurrentPlayer()].size();
 		selectRandom = (int) (Math.random() * totalPossibilities);
-		System.out.println("flag");
-		Move move = new Move(movePos[0], movePos[1], playerHands.get(getCurrentPlayer()).remove(selectRandom));
+		//System.out.println("flag");
+		Move move = new Move(movePos[0], movePos[1], hands[getCurrentPlayer()].remove(selectRandom));
 		this.performMove(move);
+	//	System.out.println(this);
 	}
 
-	void togglePlayer() {
+	public void togglePlayer() {
 		this.playerNo = 3 - this.playerNo;
 	}
 
 	public int checkStatus() {
-		if (!(playerHands.get(0).isEmpty() && playerHands.get(1).isEmpty())) {
+		if (!(hands[0].isEmpty() && hands[1].isEmpty())) {
 			return IN_PROGRESS;
 		}
 		int rowScoreLow = Integer.MAX_VALUE;
@@ -258,24 +279,25 @@ public class State {
 		sb.append(board[3][0] + " " + board[3][1] + " " + board[3][2] + " " + board[3][3] + " " + board[3][4] + "\n");
 		sb.append(board[4][0] + " " + board[4][1] + " " + board[4][2] + " " + board[4][3] + " " + board[4][4] + "\n");
 
-		sb.append("Hand P1: " + Arrays.toString(playerHands.get(0).toArray()) + "\n");
-		sb.append("Hand P2: " + Arrays.toString(playerHands.get(1).toArray()) + "\n");
+		sb.append("Hand P1: " + Arrays.toString(hands[0].toArray()) + "\n");
+		sb.append("Hand P2: " + Arrays.toString(hands[1].toArray()) + "\n");
 
 		return sb.toString();
 	}
 
-	public static void main(String[] args) {
-		ArrayList<Integer> h1 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1, 5, 5, 5));
-		ArrayList<Integer> h2 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1, 5, 5, 5));
-		State s1 = new State(4, h1, h2);
-		System.out.println(s1.getAllPossibleStates().size());
-		while (s1.checkStatus() == IN_PROGRESS) {
-			s1.randomPlay();
-			s1.togglePlayer();
-			System.out.println(s1);
-		}
-		System.out.println(s1.checkStatus());
+//	public static void main(String[] args) {
+//		ArrayList<Integer> h1 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1, 5, 5, 5));
+//		ArrayList<Integer> h2 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4, 5, 4, 3, 2, 1, 5, 5, 5));
+//		State s1 = new State(4);
+//		s1.setPlayerHand1(h1);
+//		s1.setPlayerHand2(h2);
+//		System.out.println(s1.getAllPossibleStates().size());
+//		while (s1.checkStatus() == IN_PROGRESS) {
+//			s1.randomPlay();
+//			s1.togglePlayer();
+//			System.out.println(s1);
+//		}
+//		System.out.println(s1.checkStatus());
 
-	}
 
 }

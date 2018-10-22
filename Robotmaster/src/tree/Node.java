@@ -72,4 +72,10 @@ public class Node {
 			return c.getState().getVisitCount();
 		}));
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		Node nd = (Node) obj;
+		return this.state.equals(nd.state);
+	}
 }
