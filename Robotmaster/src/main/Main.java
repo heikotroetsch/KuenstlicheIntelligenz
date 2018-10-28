@@ -20,7 +20,7 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		
-		AI ai = new RandomAI(); // TODO Hier Instanz eurer KI erzeugen.
+		AI ai = new MCTSAI(); // TODO Hier Instanz eurer KI erzeugen.
 		
 		name = ai.getName();
 		String id = null;

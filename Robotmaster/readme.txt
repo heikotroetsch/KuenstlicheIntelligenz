@@ -1,0 +1,1 @@
+Durch einen Bug, der das Austeilen der Karten beim Ziehen als 2. Spieler beeinflusst, kann die KI leider nur als "Host" ausgeführt werden.

@@ -13,10 +13,6 @@ public class Node {
 	Node parent;
 	List<Node> childArray;
 
-	public Node() {
-		this.state = new State(0, null, 0);
-		childArray = new ArrayList<>();
-	}
 	
 	public Node(State state) {
 		this.state = state;
@@ -75,5 +71,11 @@ public class Node {
 		return Collections.max(this.childArray, Comparator.comparing(c -> {
 			return c.getState().getVisitCount();
 		}));
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		Node nd = (Node) obj;
+		return this.state.equals(nd.state);
 	}
 }
