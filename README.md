@@ -55,4 +55,5 @@ Each project uses different AI algorithms. Starting of with tree searches such a
 ## Authors
 
 * **Heiko Troetsch** - *Initial work* - [seife96](https://github.com/seife96)
+* **Heiko Troetsch** - *Initial work* - [salpers](https://github.com/salpers)
 
