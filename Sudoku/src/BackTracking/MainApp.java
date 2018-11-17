@@ -15,13 +15,13 @@ public class MainApp {
   public static void main(String[] args) {
     initializeSudokus();
 
-    solvedSudoku1 = solver.backtracking(new Sudoku(sudoku1), 9);
+    solvedSudoku1 = solver.backtracking(new Sudoku(sudoku1));
     print(solvedSudoku1);
     
-    solvedSudoku2 = solver.backtracking(new Sudoku(sudoku2), 9);
+    solvedSudoku2 = solver.backtracking(new Sudoku(sudoku2));
     print(solvedSudoku2);
 
-    solvedSudoku3 = solver.backtracking(new Sudoku(sudoku3), 9);
+    solvedSudoku3 = solver.backtracking(new Sudoku(sudoku3));
     print(solvedSudoku3);
     
   }

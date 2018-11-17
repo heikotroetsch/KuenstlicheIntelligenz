@@ -3,15 +3,15 @@ package BackTracking;
 class Solver {
 
 
-  public Sudoku backtracking(Sudoku state, int n) {
+  public Sudoku backtracking(Sudoku state) {
     int row = -1;
     int col = -1;
     boolean done = true;
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        if (state.getBoard()[i][j] == 0) {
-          row = i;
-          col = j;
+    for (int x = 0; x < 9; x++) {
+      for (int y = 0; y < 9; y++) {
+        if (state.getBoard()[x][y] == 0) {
+          row = x;
+          col = y;
           done = false;
           break;
         }
@@ -22,10 +22,10 @@ class Solver {
       return state;
     }
 
-    for (int value = 1; value <= n; value++) {
+    for (int value = 1; value <= 9; value++) {
       if (state.verify(row, col, value)) {
         state.makeChange(row, col, value);
-        if (backtracking(state, n) != null) {
+        if (backtracking(state) != null) {
           return state;
         } else {
           state.makeChange(row, col, 0);

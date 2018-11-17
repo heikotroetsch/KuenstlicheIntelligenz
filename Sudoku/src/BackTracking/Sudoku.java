@@ -1,8 +1,5 @@
 package BackTracking;
 
-/*
- * Sudoku Klasse bildet ein Sudoku pussel ab.
- */
 public class Sudoku {
 
   private int[][] board = new int[9][9];
@@ -47,20 +44,20 @@ public class Sudoku {
   
   private boolean threeByThree(int row, int col, int num) {
     //checken ob die nummer schon in einem 3 bei 3 Quadrat vorkommt.
-    int sqrt = (int) Math.sqrt(board.length);
-    int boxRowStart = row - row % sqrt;
-    int boxColStart = col - col % sqrt;
-
-    for (int r = boxRowStart; r < boxRowStart + sqrt; r++) {
-      for (int d = boxColStart; d < boxColStart + sqrt; d++) {
-        if (board[r][d] == num) {
+    int startX = row - row % 3;
+    int startY = col - col % 3;
+    
+    for (int x = startX; x < startX + 3; x++) {
+      for (int y = startY; y < startY + 3; y++) {
+        if (board[x][y] == num) {
           return false;
-
         }
       }
     }
     return true;
   }
+  
+  
 
   public void print() {    
     for (int row = 0; row < board.length; row++) {
