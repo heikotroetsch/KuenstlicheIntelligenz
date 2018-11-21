@@ -33,4 +33,9 @@ public abstract class MSAgent {
 	 * From now on, you don't see any progress in the console.
 	 */
 	public abstract void deactivateDisplay();
+
+	public boolean solve2() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

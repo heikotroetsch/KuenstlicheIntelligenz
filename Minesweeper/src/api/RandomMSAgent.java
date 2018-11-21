@@ -25,7 +25,7 @@ public class RandomMSAgent extends MSAgent {
 		int numOfCols = this.field.getNumOfCols();
 		int x, y, feedback;
 
-		do {
+//		do {
 			if (displayActivated) {
 				System.out.println(field);
 			}
@@ -41,8 +41,8 @@ public class RandomMSAgent extends MSAgent {
 			if (displayActivated)
 				System.out.println("Uncovering (" + x + "," + y + ")");
 			feedback = field.uncover(x, y);
-
-		} while (feedback >= 0 && !field.solved());
+			
+//		} while (feedback >= 0 && !field.solved());
 
 		if (field.solved()) {
 			if (displayActivated) {
