@@ -35,6 +35,7 @@ public class SatAgent extends MSAgent {
 		int numOfCols = this.field.getNumOfCols();
 		int x = 0, y = 0, feedback =-1;
 		ArrayList<Integer> leftFields = getFieldList();
+		int lastUncovered;
 		do {
 			if (displayActivated) {
 				// System.out.println(field);
@@ -56,6 +57,7 @@ public class SatAgent extends MSAgent {
 				}
 				// System.out.println(x+" , "+y);
 				feedback = field.uncover(x, y);
+				lastUncovered = parseAtom(x, y);
 				// System.out.println(feedback);
 				System.out.println(field.toString());
 				insertFeedbackIntoKB(feedback, x, y);
@@ -89,6 +91,7 @@ public class SatAgent extends MSAgent {
 				}
 				if (saveFields.isEmpty()) {
 					System.out.println("picked Random");
+					pickRandField(lastUncovered);
 					saveFields.add(leftFields.get((int) (Math.random() * leftFields.size())));
 				}
 				for(int f : saveFields) {
@@ -107,6 +110,7 @@ public class SatAgent extends MSAgent {
 				}
 				// System.out.println(x+" , "+y);
 				feedback = field.uncover(x, y);
+				lastUncovered = parseAtom(x,y);
 				// System.out.println(feedback);
 				System.out.println(field.toString());
 				insertFeedbackIntoKB(feedback, x, y);
@@ -128,7 +132,13 @@ public class SatAgent extends MSAgent {
 		}
 	}
 
-	private void insertFeedbackIntoKB(int fb, int x, int y) {
+	private int[][] pickRandField(int lastUncovered) {
+	    int x = getFieldFromAtom(lastUncovered)[0];
+	    int y = getFieldFromAtom(lastUncovered)[1];
+	    return null;
+  }
+
+  private void insertFeedbackIntoKB(int fb, int x, int y) {
 		// System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
 		ArrayList<Integer> nbs = neighbours(x, y);
 		// TODO Keine Miene um Stelle x,y -> Alle Nachbarn (nbs) auf false
@@ -146,7 +156,7 @@ public class SatAgent extends MSAgent {
 		} else {
 			// eine bis acht Minen
 			for (int k = 0; k <= nbs.size(); k++) {
-				// Alle Fälle, bis auf den Fall, der FB entspricht
+				// Alle Fï¿½lle, bis auf den Fall, der FB entspricht
 				if (k != fb) {
 					generateClauses(k, nbs);
 				}

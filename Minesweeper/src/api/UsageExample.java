@@ -5,7 +5,6 @@ package api;
  * You can do whatever you want with this class.
  */
 public class UsageExample {
-
 	/**
 	 * Array containing the names of all fields. If you want to iterate over all of
 	 * them, this might help
@@ -19,31 +18,48 @@ public class UsageExample {
 			"profi5-30x16-99.txt" };
 
 	public static void main(String[] args) {
+	  StringBuffer result = new StringBuffer();
+	  for(String field : fields) {
+	    result.append(solveField(field));
+	  }
 
-		// use smaller numbers for larger fields
-		int iterations = 1;
+	  System.out.println(result.toString());
 
-		int success = 0;
-		for (int i = 0; i < iterations; i++) {
-			MSField f = new MSField("fields/" + fields[1]);
-			MSField g = new MSField("fields/profi5-30x16-99.txt");
-			SatAgent agent = new SatAgent(g);
-			
-			// to see what happens in the first iteration
-			if (i == 0) {
-				agent.activateDisplay();
-			} else {
-				agent.deactivateDisplay();
-			}
+	}
+	
+	public static String solveField(String field) {
+      long start = System.currentTimeMillis();
+	  double erfolgswahrscheinlichkeit = 0;
+	  for(int p = 0; p<50; p++) {
+	 // use smaller numbers for larger fields
+	      int iterations = 1;
 
-			boolean solved = agent.solve();
-			if (solved) {
-				success++;
-			}
-		}
-		double rate = (double) success / (double) iterations;
-		System.out.println("Erfolgsquote: " + rate);
+	      int success = 0;
+	      for (int i = 0; i < iterations; i++) {
+	          MSField g = new MSField("fields/" + field);
+	          SatAgent agent = new SatAgent(g);
+	          
+	          // to see what happens in the first iteration
+	          if (i == 0) {
+	              agent.activateDisplay();
+	          } else {
+	              agent.deactivateDisplay();
+	          }
 
+	          boolean solved = agent.solve();
+	          if (solved) {
+	              success++;
+	          }
+	      }
+	      double rate = (double) success / (double) iterations;
+	      erfolgswahrscheinlichkeit+=rate;
+	  }
+	  erfolgswahrscheinlichkeit = erfolgswahrscheinlichkeit/50;
+	
+      
+      
+      return ("Feld \tErfolgsquote: \t" + erfolgswahrscheinlichkeit+"Time: \t"+(System.currentTimeMillis()
+      -start)/1000+"\t("+field+") \n");
 	}
 
 }
