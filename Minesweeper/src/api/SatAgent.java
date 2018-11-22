@@ -13,7 +13,6 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
-
 public class SatAgent extends MSAgent {
 
 	final int MAXVAR = 100000000;
@@ -34,67 +33,86 @@ public class SatAgent extends MSAgent {
 	public boolean solve() {
 		int numOfRows = this.field.getNumOfRows();
 		int numOfCols = this.field.getNumOfCols();
-		int x=0, y=0, feedback;
+		int x = 0, y = 0, feedback =-1;
 		ArrayList<Integer> leftFields = getFieldList();
 		do {
 			if (displayActivated) {
-				//System.out.println(field);
+				// System.out.println(field);
 			}
 			if (firstDecision) {
 				x = 0;
 				y = 0;
 				firstDecision = false;
 				leftFields.remove(new Integer(0));
-				//TODO CHECK 
+				// TODO CHECK
 				try {
-					solver.addClause(new VecInt(new int[] {-999}));
+					solver.addClause(new VecInt(new int[] { -999 }));
 				} catch (ContradictionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				if (displayActivated) {
+					System.out.println("Uncovering (" + x + "," + y + ")");
+				}
+				// System.out.println(x+" , "+y);
+				feedback = field.uncover(x, y);
+				// System.out.println(feedback);
+				System.out.println(field.toString());
+				insertFeedbackIntoKB(feedback, x, y);
 			} else {
-				int saveField = 0;
-				for(int field : leftFields) {
-					//1. Check field for mines -> if detected add to KB
+				// TODO change int with ArrayList for all available fields
+				ArrayList<Integer> saveFields = new ArrayList<Integer>();
+				ArrayList<Integer> mineFields = new ArrayList<Integer>();
+				for (int field : leftFields) {
+
 					try {
-						if(!solver.isSatisfiable(new VecInt(new int[] {-field}))) {
-							////System.out.println("field "+field+" has Mine");
-							solver.addClause(new VecInt(new int[] {field}));
+						// CHECK FOR MINE
+						if (!solver.isSatisfiable(new VecInt(new int[] { -field }))) {
+							//// System.out.println("field "+field+" has Mine");
+							solver.addClause(new VecInt(new int[] { field }));
+							mineFields.add(field);
 						}
-						if(!solver.isSatisfiable(new VecInt(new int[] {field}))) {
-							////System.out.println("field "+field+" is good to go");
-							solver.addClause(new VecInt(new int[] {-field}));
-							saveField = field;
-							break;
+						// CHECK FOR OPEN
+						if (!solver.isSatisfiable(new VecInt(new int[] { field }))) {
+							//// System.out.println("field "+field+" is good to go");
+							solver.addClause(new VecInt(new int[] { -field }));
+							saveFields.add(field);
+							// TODO rm
 						}
 					} catch (TimeoutException | ContradictionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}					
+					}
 				}
-				
-				if(saveField == 0) {
+				for(int f : mineFields) {
+					leftFields.remove(new Integer(f));
+				}
+				if (saveFields.isEmpty()) {
 					System.out.println("picked Random");
-					saveField = leftFields.get((int)(Math.random()*leftFields.size()));					
+					saveFields.add(leftFields.get((int) (Math.random() * leftFields.size())));
 				}
-				leftFields.remove(new Integer(saveField));
-				////System.out.println(saveField);
-				//System.out.println("Precalculus " +saveField);
-				//DIRTY
-				int[] res = getFieldFromAtom(saveField);
+				for(int f : saveFields) {
+				// TODO LOOP OVER ALL FIELDS IN LIST
+				
+				leftFields.remove(new Integer(f));
+				//// System.out.println(saveField);
+				// System.out.println("Precalculus " +saveField);
+				// DIRTY
+				int[] res = getFieldFromAtom(f);
 				x = res[0];
 				y = res[1];
-				//System.out.println(x+" "+y);
+				// System.out.println(x+" "+y);
+				if (displayActivated) {
+					System.out.println("Uncovering (" + x + "," + y + ")");
+				}
+				// System.out.println(x+" , "+y);
+				feedback = field.uncover(x, y);
+				// System.out.println(feedback);
+				System.out.println(field.toString());
+				insertFeedbackIntoKB(feedback, x, y);
+				}
 			}
 
-			if (displayActivated) {
-				System.out.println("Uncovering (" + x + "," + y + ")");
-			}
-			//System.out.println(x+" , "+y);
-			feedback = field.uncover(x, y);
-			//System.out.println(feedback);
-			System.out.println(field.toString());
-			insertFeedbackIntoKB(feedback, x, y);
 		} while (feedback >= 0 && !field.solved());
 
 		if (field.solved()) {
@@ -111,38 +129,41 @@ public class SatAgent extends MSAgent {
 	}
 
 	private void insertFeedbackIntoKB(int fb, int x, int y) {
-		//System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
-		ArrayList<Integer> nbs = neighbours(x,y);
-		// Keine Miene um Stelle x,y -> Alle Nachbarn auf False 
-//		if (fb == 0) {
-//			try {
-//				solver.addClause(new VecInt(new int[] { parseAtom(x, y) }));
-//			} catch (ContradictionException e) {
-//				// TODO Auto-generated catch block
-//				//System.out.println("Contradiction Exception");
-//			}
-//		} else {
+		// System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
+		ArrayList<Integer> nbs = neighbours(x, y);
+		// TODO Keine Miene um Stelle x,y -> Alle Nachbarn (nbs) auf false
+		if (fb == 0) {
+			System.out.println("0 found");
+			for (int i : nbs) {
+				try {
+					System.out.println(i);
+					solver.addClause(new VecInt(new int[] { -i }));
+				} catch (ContradictionException e) {
+					// TODO Auto-generated catch block
+					// System.out.println("Contradiction Exception");
+				}
+			}
+		} else {
 			// eine bis acht Minen
 			for (int k = 0; k <= nbs.size(); k++) {
 				// Alle Fälle, bis auf den Fall, der FB entspricht
 				if (k != fb) {
-					generateClauses(k,nbs);
+					generateClauses(k, nbs);
 				}
 			}
 		}
-//	}
-
+	}
 
 	// generates all possible positions for putting @param k mines around (x,y)
-	private void generateClauses(int k, ArrayList<Integer>nbs) {
-	//	ArrayList<Integer> nbs = neighbours(x, y);
+	private void generateClauses(int k, ArrayList<Integer> nbs) {
+		// ArrayList<Integer> nbs = neighbours(x, y);
 		for (int i = 0; i <= nbs.size(); i++) {
 			if (k != i) {
 				for (int[] clause : mapPermToNeighbouts(nbs, new Permutations().permuteUnique(k, nbs.size()))) {
 					try {
 						solver.addClause(new VecInt(clause));
 					} catch (ContradictionException e) {
-						//System.out.println("Contradiction Exception");
+						// System.out.println("Contradiction Exception");
 					}
 				}
 			}
@@ -172,9 +193,10 @@ public class SatAgent extends MSAgent {
 		for (List<Integer> perm : perms) {
 			int[] clause = new int[neighbours.size()];
 			for (int i = 0; i < neighbours.size(); i++) {
-				clause[i] = perm.get(i) == 0 ? neighbours.get(i)==0? 999:neighbours.get(i) : -neighbours.get(i)==0? -999:-neighbours.get(i);
+				clause[i] = perm.get(i) == 0 ? neighbours.get(i) == 0 ? 999 : neighbours.get(i)
+						: -neighbours.get(i) == 0 ? -999 : -neighbours.get(i);
 			}
-			//System.out.println("Clause: "+Arrays.toString(clause));
+			// System.out.println("Clause: "+Arrays.toString(clause));
 			clauses.add(clause);
 		}
 
@@ -182,37 +204,35 @@ public class SatAgent extends MSAgent {
 	}
 
 	private static int parseAtom(int x, int y) {
-		int lengthX = x == 0? 1:(int)(Math.log10(x)+1);
-		String s = lengthX+""+x+""+y;
-		//System.out.println(s);
+		int lengthX = x == 0 ? 1 : (int) (Math.log10(x) + 1);
+		String s = lengthX + "" + x + "" + y;
+		// System.out.println(s);
 		return Integer.parseInt(s);
 	}
-	
+
 	private int[] getFieldFromAtom(int x) {
 		String s = String.valueOf(x);
-		//System.out.println("X: "+x+" , S: "+s);	
+		// System.out.println("X: "+x+" , S: "+s);
 		int[] vals = new int[2];
-		int length = Integer.parseInt(""+s.charAt(0));
-		//System.out.println("length: "+length);
+		int length = Integer.parseInt("" + s.charAt(0));
+		// System.out.println("length: "+length);
 
-		vals[0] = Integer.parseInt(s.substring(1,1+length));
-		vals[1] = Integer.parseInt(s.substring(1+length));
-		//System.out.println("vals1: "+vals[0]+" vals2: "+vals[1]);
+		vals[0] = Integer.parseInt(s.substring(1, 1 + length));
+		vals[1] = Integer.parseInt(s.substring(1 + length));
+		// System.out.println("vals1: "+vals[0]+" vals2: "+vals[1]);
 		return vals;
-		
+
 	}
-	
+
 	private ArrayList<Integer> getFieldList() {
 		ArrayList<Integer> fieldList = new ArrayList<Integer>();
-		for(int i = 0; i < field.getNumOfCols(); i++) {
-			for(int j = 0; j < field.getNumOfRows(); j++) {
+		for (int i = 0; i < field.getNumOfCols(); i++) {
+			for (int j = 0; j < field.getNumOfRows(); j++) {
 				fieldList.add(parseAtom(i, j));
 			}
 		}
 		return fieldList;
 	}
-
-	
 
 	@Override
 	public void activateDisplay() {
@@ -227,6 +247,6 @@ public class SatAgent extends MSAgent {
 	}
 
 	public static void main(String[] args) {
-		//System.out.println(new Permutations().permuteUnique(1, 3));
+		// System.out.println(new Permutations().permuteUnique(1, 3));
 	}
 }
