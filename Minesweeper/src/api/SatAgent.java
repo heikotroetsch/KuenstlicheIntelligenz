@@ -18,7 +18,7 @@ public class SatAgent extends MSAgent {
 
 	final int MAXVAR = 100000000;
 	final int NBCCLAUSES = 500000;
-	private boolean displayActivated = true;
+	private boolean displayActivated = false;
 	private boolean firstDecision = true;
 	private ISolver solver;
 
@@ -34,7 +34,7 @@ public class SatAgent extends MSAgent {
 	public boolean solve() {
 		int numOfRows = this.field.getNumOfRows();
 		int numOfCols = this.field.getNumOfCols();
-		int x, y, feedback;
+		int x=0, y=0, feedback;
 		ArrayList<Integer> leftFields = getFieldList();
 		do {
 			if (displayActivated) {
@@ -79,16 +79,21 @@ public class SatAgent extends MSAgent {
 				}
 				leftFields.remove(new Integer(saveField));
 				////System.out.println(saveField);
-				x = saveField / 10; 
-				y = saveField % 10;
+				//System.out.println("Precalculus " +saveField);
+				//DIRTY
+				int[] res = getFieldFromAtom(saveField);
+				x = res[0];
+				y = res[1];
+				//System.out.println(x+" "+y);
 			}
 
 			if (displayActivated) {
-				////System.out.println("Uncovering (" + x + "," + y + ")");
+				System.out.println("Uncovering (" + x + "," + y + ")");
 			}
+			//System.out.println(x+" , "+y);
 			feedback = field.uncover(x, y);
 			//System.out.println(feedback);
-			//System.out.println(field.toString());
+			System.out.println(field.toString());
 			insertFeedbackIntoKB(feedback, x, y);
 		} while (feedback >= 0 && !field.solved());
 
@@ -177,8 +182,24 @@ public class SatAgent extends MSAgent {
 	}
 
 	private static int parseAtom(int x, int y) {
-		String s = x + "" + y;
+		int lengthX = x == 0? 1:(int)(Math.log10(x)+1);
+		String s = lengthX+""+x+""+y;
+		//System.out.println(s);
 		return Integer.parseInt(s);
+	}
+	
+	private int[] getFieldFromAtom(int x) {
+		String s = String.valueOf(x);
+		//System.out.println("X: "+x+" , S: "+s);	
+		int[] vals = new int[2];
+		int length = Integer.parseInt(""+s.charAt(0));
+		//System.out.println("length: "+length);
+
+		vals[0] = Integer.parseInt(s.substring(1,1+length));
+		vals[1] = Integer.parseInt(s.substring(1+length));
+		//System.out.println("vals1: "+vals[0]+" vals2: "+vals[1]);
+		return vals;
+		
 	}
 	
 	private ArrayList<Integer> getFieldList() {

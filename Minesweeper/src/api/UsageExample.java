@@ -21,12 +21,14 @@ public class UsageExample {
 	public static void main(String[] args) {
 
 		// use smaller numbers for larger fields
-		int iterations = 1000;
+		int iterations = 1;
 
 		int success = 0;
 		for (int i = 0; i < iterations; i++) {
 			MSField f = new MSField("fields/" + fields[1]);
-			SatAgent agent = new SatAgent(f);
+			MSField g = new MSField("fields/profi5-30x16-99.txt");
+			SatAgent agent = new SatAgent(g);
+			
 			// to see what happens in the first iteration
 			if (i == 0) {
 				agent.activateDisplay();
