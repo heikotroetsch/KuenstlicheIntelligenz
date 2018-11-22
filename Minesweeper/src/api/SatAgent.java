@@ -13,8 +13,6 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
-import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
-
 public class SatAgent extends MSAgent {
 
 	final int MAXVAR = 100000000;
@@ -104,7 +102,7 @@ public class SatAgent extends MSAgent {
 		} else {
 			// eine bis acht Minen
 			for (int k = 0; k < nbs.size(); k++) {
-				// Alle Fälle, bis auf den Fall, der FB entspricht
+				// Alle Fï¿½lle, bis auf den Fall, der FB entspricht
 				if (k != fb) {
 					generateClauses(k,nbs);
 				}
