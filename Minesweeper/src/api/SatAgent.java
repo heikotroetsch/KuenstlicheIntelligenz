@@ -13,7 +13,6 @@ import org.sat4j.specs.ContradictionException;
 import org.sat4j.specs.ISolver;
 import org.sat4j.specs.TimeoutException;
 
-import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
 
 public class SatAgent extends MSAgent {
 
@@ -47,24 +46,34 @@ public class SatAgent extends MSAgent {
 				firstDecision = false;
 				leftFields.remove(new Integer(0));
 			} else {
-				x = 0;
-				y = 0;
+				int saveField = 0;
 				for(int field : leftFields) {
 					//1. Check field for mines -> if detected add to KB
 					try {
 						if(!solver.isSatisfiable(new VecInt(new int[] {-field}))) {
 							System.out.println("field "+field+" has Mine");
+							solver.addClause(new VecInt(new int[] {field}));
 						}
-						if(!solver.isSatisfiable(new VecInt(new int[] {-field}))) {
+						if(!solver.isSatisfiable(new VecInt(new int[] {field}))) {
 							System.out.println("field "+field+" is good to go");
+							solver.addClause(new VecInt(new int[] {field}));
+							saveField = field;
+							break;
+						} else {
+							System.out.println("not sure");
 						}
-					} catch (TimeoutException e) {
+					} catch (TimeoutException | ContradictionException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					}
-					
+					}					
 				}
-				//2. Check field for free spaces -> if detected open up and add to kb
+				
+				if(saveField == 0) {
+					saveField = leftFields.get((int)Math.random()*leftFields.size());					
+				}
+				leftFields.remove(new Integer(saveField));
+				x = saveField / 10; 
+				y = saveField % 10;
 			}
 
 			if (displayActivated) {
@@ -74,7 +83,6 @@ public class SatAgent extends MSAgent {
 			System.out.println(feedback);
 			System.out.println(field.toString());
 			insertFeedbackIntoKB(feedback, x, y);
-			break;
 		} while (feedback >= 0 && !field.solved());
 
 		if (field.solved()) {
