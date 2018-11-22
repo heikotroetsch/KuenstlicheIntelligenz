@@ -21,7 +21,7 @@ public class UsageExample {
 	public static void main(String[] args) {
 
 		// use smaller numbers for larger fields
-		int iterations = 1;
+		int iterations = 1000;
 
 		int success = 0;
 		for (int i = 0; i < iterations; i++) {

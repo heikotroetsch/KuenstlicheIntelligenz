@@ -45,6 +45,13 @@ public class SatAgent extends MSAgent {
 				y = 0;
 				firstDecision = false;
 				leftFields.remove(new Integer(0));
+				//TODO CHECK 
+				try {
+					solver.addClause(new VecInt(new int[] {-999}));
+				} catch (ContradictionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else {
 				int saveField = 0;
 				for(int field : leftFields) {
@@ -56,11 +63,9 @@ public class SatAgent extends MSAgent {
 						}
 						if(!solver.isSatisfiable(new VecInt(new int[] {field}))) {
 							System.out.println("field "+field+" is good to go");
-							solver.addClause(new VecInt(new int[] {field}));
+							solver.addClause(new VecInt(new int[] {-field}));
 							saveField = field;
 							break;
-						} else {
-							System.out.println("not sure");
 						}
 					} catch (TimeoutException | ContradictionException e) {
 						// TODO Auto-generated catch block
@@ -69,9 +74,11 @@ public class SatAgent extends MSAgent {
 				}
 				
 				if(saveField == 0) {
-					saveField = leftFields.get((int)Math.random()*leftFields.size());					
+					System.out.println("picked Random");
+					saveField = leftFields.get((int)(Math.random()*leftFields.size()));					
 				}
 				leftFields.remove(new Integer(saveField));
+				System.out.println(saveField);
 				x = saveField / 10; 
 				y = saveField % 10;
 			}
@@ -101,30 +108,30 @@ public class SatAgent extends MSAgent {
 	private void insertFeedbackIntoKB(int fb, int x, int y) {
 		System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
 		ArrayList<Integer> nbs = neighbours(x,y);
-		// Keine Miene an Stelle x,y
-		if (fb == 0) {
-			try {
-				solver.addClause(new VecInt(new int[] { parseAtom(x, y) }));
-			} catch (ContradictionException e) {
-				// TODO Auto-generated catch block
-				System.out.println("Contradiction Exception");
-			}
-		} else {
+		// Keine Miene um Stelle x,y -> Alle Nachbarn auf False 
+//		if (fb == 0) {
+//			try {
+//				solver.addClause(new VecInt(new int[] { parseAtom(x, y) }));
+//			} catch (ContradictionException e) {
+//				// TODO Auto-generated catch block
+//				System.out.println("Contradiction Exception");
+//			}
+//		} else {
 			// eine bis acht Minen
-			for (int k = 0; k < nbs.size(); k++) {
+			for (int k = 0; k <= nbs.size(); k++) {
 				// Alle Fälle, bis auf den Fall, der FB entspricht
 				if (k != fb) {
 					generateClauses(k,nbs);
 				}
 			}
 		}
-	}
+//	}
 
 
 	// generates all possible positions for putting @param k mines around (x,y)
 	private void generateClauses(int k, ArrayList<Integer>nbs) {
 	//	ArrayList<Integer> nbs = neighbours(x, y);
-		for (int i = 0; i < nbs.size(); i++) {
+		for (int i = 0; i <= nbs.size(); i++) {
 			if (k != i) {
 				for (int[] clause : mapPermToNeighbouts(nbs, new Permutations().permuteUnique(k, nbs.size()))) {
 					try {
@@ -160,7 +167,7 @@ public class SatAgent extends MSAgent {
 		for (List<Integer> perm : perms) {
 			int[] clause = new int[neighbours.size()];
 			for (int i = 0; i < neighbours.size(); i++) {
-				clause[i] = perm.get(i) == 0 ? neighbours.get(i) : -neighbours.get(i);
+				clause[i] = perm.get(i) == 0 ? neighbours.get(i)==0? 999:neighbours.get(i) : -neighbours.get(i)==0? -999:-neighbours.get(i);
 			}
 			System.out.println("Clause: "+Arrays.toString(clause));
 			clauses.add(clause);
