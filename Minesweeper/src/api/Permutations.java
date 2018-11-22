@@ -9,7 +9,7 @@ import java.util.Set;
 public class Permutations {
 
 	public List<List<Integer>> permuteUnique(int x, int nbs) {
-		System.out.println("KNF Clause, "+x + " für " +nbs);
+		//System.out.println("KNF Clause, "+x + " für " +nbs);
 		int[] nums = new int[nbs];
 		Arrays.fill(nums,0);
 		for(int i = 0; i < x; i++) {

@@ -18,7 +18,7 @@ public class SatAgent extends MSAgent {
 
 	final int MAXVAR = 100000000;
 	final int NBCCLAUSES = 500000;
-	private boolean displayActivated = true;
+	private boolean displayActivated = false;
 	private boolean firstDecision = true;
 	private ISolver solver;
 
@@ -34,33 +34,38 @@ public class SatAgent extends MSAgent {
 	public boolean solve() {
 		int numOfRows = this.field.getNumOfRows();
 		int numOfCols = this.field.getNumOfCols();
-		int x, y, feedback;
+		int x=0, y=0, feedback;
 		ArrayList<Integer> leftFields = getFieldList();
 		do {
 			if (displayActivated) {
-				System.out.println(field);
+				//System.out.println(field);
 			}
 			if (firstDecision) {
 				x = 0;
 				y = 0;
 				firstDecision = false;
 				leftFields.remove(new Integer(0));
+				//TODO CHECK 
+				try {
+					solver.addClause(new VecInt(new int[] {-999}));
+				} catch (ContradictionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else {
 				int saveField = 0;
 				for(int field : leftFields) {
 					//1. Check field for mines -> if detected add to KB
 					try {
 						if(!solver.isSatisfiable(new VecInt(new int[] {-field}))) {
-							System.out.println("field "+field+" has Mine");
+							////System.out.println("field "+field+" has Mine");
 							solver.addClause(new VecInt(new int[] {field}));
 						}
 						if(!solver.isSatisfiable(new VecInt(new int[] {field}))) {
-							System.out.println("field "+field+" is good to go");
-							solver.addClause(new VecInt(new int[] {field}));
+							////System.out.println("field "+field+" is good to go");
+							solver.addClause(new VecInt(new int[] {-field}));
 							saveField = field;
 							break;
-						} else {
-							System.out.println("not sure");
 						}
 					} catch (TimeoutException | ContradictionException e) {
 						// TODO Auto-generated catch block
@@ -69,18 +74,25 @@ public class SatAgent extends MSAgent {
 				}
 				
 				if(saveField == 0) {
-					saveField = leftFields.get((int)Math.random()*leftFields.size());					
+					System.out.println("picked Random");
+					saveField = leftFields.get((int)(Math.random()*leftFields.size()));					
 				}
 				leftFields.remove(new Integer(saveField));
-				x = saveField / 10; 
-				y = saveField % 10;
+				////System.out.println(saveField);
+				//System.out.println("Precalculus " +saveField);
+				//DIRTY
+				int[] res = getFieldFromAtom(saveField);
+				x = res[0];
+				y = res[1];
+				//System.out.println(x+" "+y);
 			}
 
 			if (displayActivated) {
 				System.out.println("Uncovering (" + x + "," + y + ")");
 			}
+			//System.out.println(x+" , "+y);
 			feedback = field.uncover(x, y);
-			System.out.println(feedback);
+			//System.out.println(feedback);
 			System.out.println(field.toString());
 			insertFeedbackIntoKB(feedback, x, y);
 		} while (feedback >= 0 && !field.solved());
@@ -99,38 +111,38 @@ public class SatAgent extends MSAgent {
 	}
 
 	private void insertFeedbackIntoKB(int fb, int x, int y) {
-		System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
+		//System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
 		ArrayList<Integer> nbs = neighbours(x,y);
-		// Keine Miene an Stelle x,y
-		if (fb == 0) {
-			try {
-				solver.addClause(new VecInt(new int[] { parseAtom(x, y) }));
-			} catch (ContradictionException e) {
-				// TODO Auto-generated catch block
-				System.out.println("Contradiction Exception");
-			}
-		} else {
+		// Keine Miene um Stelle x,y -> Alle Nachbarn auf False 
+//		if (fb == 0) {
+//			try {
+//				solver.addClause(new VecInt(new int[] { parseAtom(x, y) }));
+//			} catch (ContradictionException e) {
+//				// TODO Auto-generated catch block
+//				//System.out.println("Contradiction Exception");
+//			}
+//		} else {
 			// eine bis acht Minen
-			for (int k = 0; k < nbs.size(); k++) {
+			for (int k = 0; k <= nbs.size(); k++) {
 				// Alle Fälle, bis auf den Fall, der FB entspricht
 				if (k != fb) {
 					generateClauses(k,nbs);
 				}
 			}
 		}
-	}
+//	}
 
 
 	// generates all possible positions for putting @param k mines around (x,y)
 	private void generateClauses(int k, ArrayList<Integer>nbs) {
 	//	ArrayList<Integer> nbs = neighbours(x, y);
-		for (int i = 0; i < nbs.size(); i++) {
+		for (int i = 0; i <= nbs.size(); i++) {
 			if (k != i) {
 				for (int[] clause : mapPermToNeighbouts(nbs, new Permutations().permuteUnique(k, nbs.size()))) {
 					try {
 						solver.addClause(new VecInt(clause));
 					} catch (ContradictionException e) {
-						System.out.println("Contradiction Exception");
+						//System.out.println("Contradiction Exception");
 					}
 				}
 			}
@@ -150,8 +162,8 @@ public class SatAgent extends MSAgent {
 				}
 			}
 		}
-//		System.out.println("Field: ("+x+","+y+")");
-//		System.out.println(neighbours);
+//		//System.out.println("Field: ("+x+","+y+")");
+//		//System.out.println(neighbours);
 		return neighbours;
 	}
 
@@ -160,9 +172,9 @@ public class SatAgent extends MSAgent {
 		for (List<Integer> perm : perms) {
 			int[] clause = new int[neighbours.size()];
 			for (int i = 0; i < neighbours.size(); i++) {
-				clause[i] = perm.get(i) == 0 ? neighbours.get(i) : -neighbours.get(i);
+				clause[i] = perm.get(i) == 0 ? neighbours.get(i)==0? 999:neighbours.get(i) : -neighbours.get(i)==0? -999:-neighbours.get(i);
 			}
-			System.out.println("Clause: "+Arrays.toString(clause));
+			//System.out.println("Clause: "+Arrays.toString(clause));
 			clauses.add(clause);
 		}
 
@@ -170,8 +182,24 @@ public class SatAgent extends MSAgent {
 	}
 
 	private static int parseAtom(int x, int y) {
-		String s = x + "" + y;
+		int lengthX = x == 0? 1:(int)(Math.log10(x)+1);
+		String s = lengthX+""+x+""+y;
+		//System.out.println(s);
 		return Integer.parseInt(s);
+	}
+	
+	private int[] getFieldFromAtom(int x) {
+		String s = String.valueOf(x);
+		//System.out.println("X: "+x+" , S: "+s);	
+		int[] vals = new int[2];
+		int length = Integer.parseInt(""+s.charAt(0));
+		//System.out.println("length: "+length);
+
+		vals[0] = Integer.parseInt(s.substring(1,1+length));
+		vals[1] = Integer.parseInt(s.substring(1+length));
+		//System.out.println("vals1: "+vals[0]+" vals2: "+vals[1]);
+		return vals;
+		
 	}
 	
 	private ArrayList<Integer> getFieldList() {
@@ -199,6 +227,6 @@ public class SatAgent extends MSAgent {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(new Permutations().permuteUnique(1, 3));
+		//System.out.println(new Permutations().permuteUnique(1, 3));
 	}
 }
