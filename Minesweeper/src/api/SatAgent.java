@@ -38,7 +38,7 @@ public class SatAgent extends MSAgent {
 		ArrayList<Integer> leftFields = getFieldList();
 		do {
 			if (displayActivated) {
-				System.out.println(field);
+				//System.out.println(field);
 			}
 			if (firstDecision) {
 				x = 0;
@@ -58,11 +58,11 @@ public class SatAgent extends MSAgent {
 					//1. Check field for mines -> if detected add to KB
 					try {
 						if(!solver.isSatisfiable(new VecInt(new int[] {-field}))) {
-							System.out.println("field "+field+" has Mine");
+							////System.out.println("field "+field+" has Mine");
 							solver.addClause(new VecInt(new int[] {field}));
 						}
 						if(!solver.isSatisfiable(new VecInt(new int[] {field}))) {
-							System.out.println("field "+field+" is good to go");
+							////System.out.println("field "+field+" is good to go");
 							solver.addClause(new VecInt(new int[] {-field}));
 							saveField = field;
 							break;
@@ -78,17 +78,17 @@ public class SatAgent extends MSAgent {
 					saveField = leftFields.get((int)(Math.random()*leftFields.size()));					
 				}
 				leftFields.remove(new Integer(saveField));
-				System.out.println(saveField);
+				////System.out.println(saveField);
 				x = saveField / 10; 
 				y = saveField % 10;
 			}
 
 			if (displayActivated) {
-				System.out.println("Uncovering (" + x + "," + y + ")");
+				////System.out.println("Uncovering (" + x + "," + y + ")");
 			}
 			feedback = field.uncover(x, y);
-			System.out.println(feedback);
-			System.out.println(field.toString());
+			//System.out.println(feedback);
+			//System.out.println(field.toString());
 			insertFeedbackIntoKB(feedback, x, y);
 		} while (feedback >= 0 && !field.solved());
 
@@ -106,7 +106,7 @@ public class SatAgent extends MSAgent {
 	}
 
 	private void insertFeedbackIntoKB(int fb, int x, int y) {
-		System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
+		//System.out.println(fb+" Minen an Stelle ("+x+","+y+")");
 		ArrayList<Integer> nbs = neighbours(x,y);
 		// Keine Miene um Stelle x,y -> Alle Nachbarn auf False 
 //		if (fb == 0) {
@@ -114,7 +114,7 @@ public class SatAgent extends MSAgent {
 //				solver.addClause(new VecInt(new int[] { parseAtom(x, y) }));
 //			} catch (ContradictionException e) {
 //				// TODO Auto-generated catch block
-//				System.out.println("Contradiction Exception");
+//				//System.out.println("Contradiction Exception");
 //			}
 //		} else {
 			// eine bis acht Minen
@@ -137,7 +137,7 @@ public class SatAgent extends MSAgent {
 					try {
 						solver.addClause(new VecInt(clause));
 					} catch (ContradictionException e) {
-						System.out.println("Contradiction Exception");
+						//System.out.println("Contradiction Exception");
 					}
 				}
 			}
@@ -157,8 +157,8 @@ public class SatAgent extends MSAgent {
 				}
 			}
 		}
-//		System.out.println("Field: ("+x+","+y+")");
-//		System.out.println(neighbours);
+//		//System.out.println("Field: ("+x+","+y+")");
+//		//System.out.println(neighbours);
 		return neighbours;
 	}
 
@@ -169,7 +169,7 @@ public class SatAgent extends MSAgent {
 			for (int i = 0; i < neighbours.size(); i++) {
 				clause[i] = perm.get(i) == 0 ? neighbours.get(i)==0? 999:neighbours.get(i) : -neighbours.get(i)==0? -999:-neighbours.get(i);
 			}
-			System.out.println("Clause: "+Arrays.toString(clause));
+			//System.out.println("Clause: "+Arrays.toString(clause));
 			clauses.add(clause);
 		}
 
@@ -206,6 +206,6 @@ public class SatAgent extends MSAgent {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(new Permutations().permuteUnique(1, 3));
+		//System.out.println(new Permutations().permuteUnique(1, 3));
 	}
 }
