@@ -20,6 +20,7 @@ public class SatAgent extends MSAgent {
 	private boolean displayActivated = false;
 	private boolean firstDecision = true;
 	private ISolver solver;
+	private int lastUncovered = 0;
 
 	public SatAgent(MSField field) {
 		super(field);
@@ -35,7 +36,6 @@ public class SatAgent extends MSAgent {
 		int numOfCols = this.field.getNumOfCols();
 		int x = 0, y = 0, feedback =-1;
 		ArrayList<Integer> leftFields = getFieldList();
-		int lastUncovered;
 		do {
 			if (displayActivated) {
 				// System.out.println(field);
@@ -91,8 +91,8 @@ public class SatAgent extends MSAgent {
 				}
 				if (saveFields.isEmpty()) {
 					System.out.println("picked Random");
-					pickRandField(lastUncovered);
-					saveFields.add(leftFields.get((int) (Math.random() * leftFields.size())));
+					saveFields.add(pickRandField(lastUncovered, saveFields, mineFields, leftFields));
+					//saveFields.add(leftFields.get((int) (Math.random() * leftFields.size())));
 				}
 				for(int f : saveFields) {
 				// TODO LOOP OVER ALL FIELDS IN LIST
@@ -132,10 +132,31 @@ public class SatAgent extends MSAgent {
 		}
 	}
 
-	private int[][] pickRandField(int lastUncovered) {
+	private int pickRandField(int lastUncovered, ArrayList<Integer> saveFields, ArrayList<Integer> mineFields, ArrayList<Integer> leftFields) {
 	    int x = getFieldFromAtom(lastUncovered)[0];
 	    int y = getFieldFromAtom(lastUncovered)[1];
-	    return null;
+	    
+	    ArrayList<Integer> neighborsOfNeighbors = new ArrayList<Integer>();
+	    for(int neighbor : neighbours(x, y)) {
+	      neighborsOfNeighbors.addAll(neighbours(getFieldFromAtom(neighbor)[0], getFieldFromAtom(neighbor)[1]));
+	    }
+	    
+	    for(int option : neighborsOfNeighbors) {
+	      if(!saveFields.contains(option) && !mineFields.contains(option)) {
+	        boolean freeFloating = true;
+	        for(int neighbor : neighbours(getFieldFromAtom(option)[0], getFieldFromAtom(option)[1])) {
+	          if(saveFields.contains(neighbor) || mineFields.contains(neighbor)) {
+	            freeFloating = false;
+	            break;
+	          }
+	        }
+	        if(freeFloating) {
+	          return option;
+	        }
+	      }
+	    }
+	    
+	    return leftFields.get((int) (Math.random() * leftFields.size()));
   }
 
   private void insertFeedbackIntoKB(int fb, int x, int y) {

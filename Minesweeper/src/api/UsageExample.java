@@ -30,7 +30,7 @@ public class UsageExample {
 	public static String solveField(String field) {
       long start = System.currentTimeMillis();
 	  double erfolgswahrscheinlichkeit = 0;
-	  for(int p = 0; p<50; p++) {
+	  for(int p = 0; p<5; p++) {
 	 // use smaller numbers for larger fields
 	      int iterations = 1;
 
@@ -54,11 +54,11 @@ public class UsageExample {
 	      double rate = (double) success / (double) iterations;
 	      erfolgswahrscheinlichkeit+=rate;
 	  }
-	  erfolgswahrscheinlichkeit = erfolgswahrscheinlichkeit/50;
+	  erfolgswahrscheinlichkeit = erfolgswahrscheinlichkeit/5;
 	
       
       
-      return ("Feld \tErfolgsquote: \t" + erfolgswahrscheinlichkeit+"Time: \t"+(System.currentTimeMillis()
+      return ("Feld \tErfolgsquote: \t" + erfolgswahrscheinlichkeit+" Time: \t"+(System.currentTimeMillis()
       -start)/1000+"\t("+field+") \n");
 	}
 
